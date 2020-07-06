@@ -17,6 +17,9 @@ class MatrixMathTest {
         assertThatThrownBy(() -> MatrixMath.add(m1, m2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Both matrices must have the same row count. Provided sizes are [%d] and [%d]", 1, 2);
+        assertThatThrownBy(() -> MatrixMath.subtract(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same row count. Provided sizes are [%d] and [%d]", 1, 2);
     }
 
     @Test
@@ -25,6 +28,9 @@ class MatrixMathTest {
         Matrix<Integer> m2 = Generator.random(2, 2);
 
         assertThatThrownBy(() -> MatrixMath.add(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same column count. Provided sizes are [%d] and [%d]", 1, 2);
+        assertThatThrownBy(() -> MatrixMath.subtract(m1, m2))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Both matrices must have the same column count. Provided sizes are [%d] and [%d]", 1, 2);
     }
@@ -41,6 +47,21 @@ class MatrixMathTest {
                 () -> assertThat(result.get(0, 0)).isEqualTo(5),
                 () -> assertThat(result.get(1, 1)).isEqualTo(5),
                 () -> assertThat(result).isEqualTo(new Matrix<>(2, 2, 5, 5, 5, 5))
+        );
+    }
+
+    @Test
+    void subtract() {
+        Matrix<Integer> matrix1 = new Matrix<>(2, 2, 1, 2, 3, 4);
+        Matrix<Integer> matrix2 = new Matrix<>(2, 2, 4, 3, 2, 1);
+        Matrix<Integer> result = MatrixMath.subtract(matrix1, matrix2);
+
+        Assertions.assertAll(
+                () -> assertThat(result.getRowSize()).isEqualTo(matrix1.getRowSize()),
+                () -> assertThat(result.getColumnSize()).isEqualTo(matrix1.getColumnSize()),
+                () -> assertThat(result.get(0, 0)).isEqualTo(-3),
+                () -> assertThat(result.get(1, 1)).isEqualTo(3),
+                () -> assertThat(result).isEqualTo(new Matrix<>(2, 2, -3, -1, 1, 3))
         );
     }
 
