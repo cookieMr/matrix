@@ -1,24 +1,36 @@
 package mr.cookie.matrix.random;
 
 import mr.cookie.matrix.model.Matrix;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public class Generator {
+public final class Generator {
 
     private static final int MAX_ALLOWED_SIZE = 1000;
+    private static final int MAX_ALLOWED_NUMBER = 100;
     private static final Random RANDOM = new Random();
 
     private Generator() {
         throw new AssertionError("Generator class should not be instantiated.");
     }
 
-    public static Matrix random() {
+    @NotNull
+    public static Matrix<Integer> random() {
         return random(1 + RANDOM.nextInt(MAX_ALLOWED_SIZE), 1 + RANDOM.nextInt(MAX_ALLOWED_SIZE));
     }
 
-    public static Matrix random(int rowCount, int columnCount) {
-        return null;
+    @NotNull
+    public static Matrix<Integer> random(int rowCount, int columnCount) {
+        Integer[] numbers = new Integer[rowCount * columnCount];
+
+        int index = 0;
+        while (index < rowCount * columnCount) {
+            numbers[index] = MAX_ALLOWED_NUMBER - RANDOM.nextInt(2 * MAX_ALLOWED_NUMBER);
+            index++;
+        }
+
+        return new Matrix<>(rowCount, columnCount, numbers);
     }
 
 }
