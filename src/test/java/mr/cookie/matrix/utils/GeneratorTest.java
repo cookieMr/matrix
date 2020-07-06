@@ -1,4 +1,4 @@
-package mr.cookie.matrix.random;
+package mr.cookie.matrix.utils;
 
 import mr.cookie.matrix.model.Matrix;
 import org.junit.jupiter.api.RepeatedTest;
