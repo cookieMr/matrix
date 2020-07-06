@@ -4,6 +4,7 @@ import mr.cookie.matrix.model.Matrix;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public final class MatrixMath {
 
@@ -49,6 +50,40 @@ public final class MatrixMath {
         }
 
         return new Matrix<>(rowSize, columnSize, numbers);
+    }
+
+    @NotNull
+    public static Matrix<Integer> multiply(@NotNull Matrix<Integer> m1, @NotNull Matrix<Integer> m2) {
+        verifyRowAndColumnCountsForMultiplication(m1, m2);
+
+        final int rowSize = m1.getRowSize();
+        Integer[] numbers = new Integer[rowSize * rowSize];
+        int index = 0;
+
+        for (int c = 0; c < rowSize; c++) {
+            for (int r = 0; r < rowSize; r++) {
+                List<Integer> row = m1.getRow(c);
+                List<Integer> column = m2.getColumn(r);
+
+                numbers[index++] = IntStream.range(0, row.size())
+                        .map(i -> row.get(i) * column.get(i))
+                        .sum();
+            }
+        }
+
+        return new Matrix<>(rowSize, rowSize, numbers);
+    }
+
+    private static void verifyRowAndColumnCountsForMultiplication(Matrix<?> m1, Matrix<?> m2) {
+        if (m1.getColumnSize() != m2.getRowSize()) {
+            throw new IllegalArgumentException(String.format("These two matrices can not be multiplied. " +
+                    "Column count [%d] and row count [%d] are not equal.", m1.getColumnSize(), m2.getRowSize()));
+        }
+
+        if (m1.getRowSize() != m2.getColumnSize()) {
+            throw new IllegalArgumentException(String.format("These two matrices can not be multiplied. " +
+                    "Row count [%d] and column count [%d] are not equal.", m1.getRowSize(), m2.getColumnSize()));
+        }
     }
 
     private static void verifyRowCount(Matrix<?> m1, Matrix<?> m2) {
