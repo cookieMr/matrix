@@ -1,15 +1,22 @@
 package mr.cookie.matrix.model;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@EqualsAndHashCode
 public class Matrix<T extends Number> {
 
     private final T[] numbers;
+
+    @Getter
     private final int rowSize;
+
+    @Getter
     private final int columnSize;
 
     @SafeVarargs
@@ -33,14 +40,6 @@ public class Matrix<T extends Number> {
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         this.numbers = numbers;
-    }
-
-    public int getRowSize() {
-        return rowSize;
-    }
-
-    public int getColumnSize() {
-        return columnSize;
     }
 
     @NotNull

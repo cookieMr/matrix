@@ -39,10 +39,8 @@ class MatrixMathTest {
                 () -> assertThat(result.getRowSize()).isEqualTo(matrix1.getRowSize()),
                 () -> assertThat(result.getColumnSize()).isEqualTo(matrix1.getColumnSize()),
                 () -> assertThat(result.get(0, 0)).isEqualTo(5),
-                () -> assertThat(result.get(1, 1)).isEqualTo(5)
-
-                // TODO: lombok and equals/hashcode
-                // () -> assertThat(result).isEqualTo(new Matrix<>(2, 2, 5, 5, 5, 5))
+                () -> assertThat(result.get(1, 1)).isEqualTo(5),
+                () -> assertThat(result).isEqualTo(new Matrix<>(2, 2, 5, 5, 5, 5))
         );
     }
 
