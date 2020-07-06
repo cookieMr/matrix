@@ -48,6 +48,14 @@ class MatrixTest {
     }
 
     @Test
+    void varargContainsNull() {
+        Integer[] numbers = new Integer[]{null, 1, 2, null};
+        assertThatThrownBy(() -> new Matrix<>(1, 4, numbers))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Matrix should not hold null value.");
+    }
+
+    @Test
     void getRowAndColumnSize() {
         Matrix<Integer> matrix = new Matrix<>(2, 1, 1, 2);
 
@@ -84,17 +92,17 @@ class MatrixTest {
     @Test
     void getRow() {
         assertThat(MATRIX_2_BY_3.getRow(1))
-                .hasSize(2)
-                .hasSize(MATRIX_2_BY_3.getRowSize())
-                .containsExactly(3, 4);
+                .hasSize(3)
+                .hasSize(MATRIX_2_BY_3.getColumnSize())
+                .containsExactly(4, 5, 6);
     }
 
     @Test
     void getColumn() {
         assertThat(MATRIX_2_BY_3.getColumn(1))
-                .hasSize(3)
-                .hasSize(MATRIX_2_BY_3.getColumnSize())
-                .containsExactly(2, 4, 6);
+                .hasSize(2)
+                .hasSize(MATRIX_2_BY_3.getRowSize())
+                .containsExactly(2, 5);
     }
 
 }

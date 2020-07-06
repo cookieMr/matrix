@@ -36,6 +36,28 @@ class MatrixMathTest {
     }
 
     @Test
+    void firstConditionOfRowAndColumnCheckThrowsException() {
+        Matrix<Integer> m1 = Generator.random(2, 3);
+        Matrix<Integer> m2 = Generator.random(2, 3);
+
+        assertThatThrownBy(() -> MatrixMath.multiply(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("These two matrices can not be multiplied. " +
+                        "Column count [%d] and row count [%d] are not equal.", 3, 2);
+    }
+
+    @Test
+    void secondConditionOfRowAndColumnCheckThrowsException() {
+        Matrix<Integer> m1 = Generator.random(2, 3);
+        Matrix<Integer> m2 = Generator.random(3, 3);
+
+        assertThatThrownBy(() -> MatrixMath.multiply(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("These two matrices can not be multiplied. " +
+                        "Row count [%d] and column count [%d] are not equal.", 2, 3);
+    }
+
+    @Test
     void add() {
         Matrix<Integer> matrix1 = new Matrix<>(2, 2, 1, 2, 3, 4);
         Matrix<Integer> matrix2 = new Matrix<>(2, 2, 4, 3, 2, 1);
@@ -63,6 +85,20 @@ class MatrixMathTest {
                 () -> assertThat(result.get(1, 1)).isEqualTo(3),
                 () -> assertThat(result).isEqualTo(new Matrix<>(2, 2, -3, -1, 1, 3))
         );
+    }
+
+    @Test
+    void multiply() {
+        Matrix<Integer> matrix1 = new Matrix<>(2, 3, 1, 0, 2, -1, 3, 1);
+        Matrix<Integer> matrix2 = new Matrix<>(3, 2, 3, 1, 2, 1, 1, 0);
+
+        Matrix<Integer> expected1 = new Matrix<>(2, 2, 5, 1, 4, 2);
+        Matrix<Integer> result1 = MatrixMath.multiply(matrix1, matrix2);
+        assertThat(result1).isEqualTo(expected1);
+
+        Matrix<Integer> expected2 = new Matrix<>(3, 3, 2, 3, 7, 1, 3, 5, 1, 0, 2);
+        Matrix<Integer> result2 = MatrixMath.multiply(matrix2, matrix1);
+        assertThat(result2).isEqualTo(expected2);
     }
 
 }

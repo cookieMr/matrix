@@ -7,6 +7,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 
 @EqualsAndHashCode
 public class Matrix<T extends Number> {
@@ -37,6 +39,10 @@ public class Matrix<T extends Number> {
                             rowSize * columnSize, numbers.length));
         }
 
+        if (Stream.of(numbers).anyMatch(Objects::isNull)) {
+            throw new IllegalArgumentException("Matrix should not hold null value.");
+        }
+
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         this.numbers = numbers;
@@ -55,7 +61,7 @@ public class Matrix<T extends Number> {
         validateRow(row);
 
         List<T> theRow = new ArrayList<>(rowSize);
-        theRow.addAll(Arrays.asList(numbers).subList(row * rowSize, rowSize + row * rowSize));
+        theRow.addAll(Arrays.asList(numbers).subList(row * columnSize, columnSize + row * columnSize));
 
         return theRow;
     }
@@ -64,9 +70,9 @@ public class Matrix<T extends Number> {
     public List<T> getColumn(int column) {
         validateColumn(column);
 
-        List<T> theColumn = new ArrayList<>(columnSize);
-        for (int c = 0; c < columnSize; c++) {
-            theColumn.add(numbers[rowSize * c + column]);
+        List<T> theColumn = new ArrayList<>(rowSize);
+        for (int c = 0; c < rowSize; c++) {
+            theColumn.add(numbers[columnSize * c + column]);
         }
 
         return theColumn;
