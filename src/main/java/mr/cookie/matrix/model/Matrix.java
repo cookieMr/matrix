@@ -8,6 +8,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A class that represents a matrix.
+ *
+ * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia - Matrix (mathematics)</a>
+ */
 public class Matrix {
 
     private final int[] elements;
