@@ -10,12 +10,21 @@ import java.util.Objects;
 
 public class Matrix {
 
-    private final int[] numbers;
+    private final int[] elements;
     private final int rowSize;
     private final int columnSize;
     private Integer determinant;
 
-    public Matrix(int rowSize, int columnSize, @NotNull int... numbers) {
+    /**
+     * Constructs new matrix with specified size and specified elements. Verifies if row & column sizes are
+     * greater than zero and that input elements can fill up whole matrix (their size is exactly
+     * {@code rowSize * columnSize}). If not then {@link IllegalArgumentException} with a proper message is thrown.
+     *
+     * @param rowSize    a number of rows in the new matrix (must be greater than zero)
+     * @param columnSize a number of column in the new matrix (must be greater than zero)
+     * @param elements   elements of the new matrix, it needs to be the length of {@code rowSize * columnSize}
+     */
+    public Matrix(int rowSize, int columnSize, @NotNull int... elements) {
         if (rowSize < 1) {
             throw new IllegalArgumentException(
                     String.format("Row size must be greater than 0, it was [%d].", rowSize));
@@ -26,21 +35,31 @@ public class Matrix {
                     String.format("Column size must be greater than 0, it was [%d].", columnSize));
         }
 
-        if (numbers.length != rowSize * columnSize) {
+        if (elements.length != rowSize * columnSize) {
             throw new IllegalArgumentException(
                     String.format("Integers must have length [%d], but the input has length of [%d].",
-                            rowSize * columnSize, numbers.length));
+                            rowSize * columnSize, elements.length));
         }
 
         this.rowSize = rowSize;
         this.columnSize = columnSize;
-        this.numbers = numbers;
+        this.elements = elements;
     }
 
+    /**
+     * Returns a row count, a width of this matrix.
+     *
+     * @return a row count
+     */
     public int getRowSize() {
         return rowSize;
     }
 
+    /**
+     * Returns a column count, a height of this matrix.
+     *
+     * @return a column count
+     */
     public int getColumnSize() {
         return columnSize;
     }
@@ -60,20 +79,30 @@ public class Matrix {
      * @param constant a constant to multiply all elements in the matrix
      */
     public void multiplyByConstant(int constant) {
-        for (int i = 0; i < numbers.length; i++) {
-            numbers[i] *= constant;
+        for (int i = 0; i < elements.length; i++) {
+            elements[i] *= constant;
         }
     }
 
+    /**
+     * Returns a specific element from this matrix, pointed out by coordinated (row & column number)
+     * that are oth based indices. Both input row & column numbers must be a valid matrix coordinates.
+     * Otherwise {@link IndexOutOfBoundsException} is thrown with a proper message.
+     *
+     * @param row    0th based row number of the element
+     * @param column 0th based column number of the element
+     * @return an element from the matrix
+     */
     public int get(int row, int column) {
         validateRow(row);
         validateColumn(column);
 
-        return numbers[row + rowSize * column];
+        return elements[row + rowSize * column];
     }
 
     /**
-     * Returns a whole row from this matrix pointed by the provided row index, which is 0th based.
+     * Returns a whole row from this matrix pointed by the provided row index, which is 0th based. A row index must be
+     * a valid one. Otherwise {@link IndexOutOfBoundsException} is thrown with a proper message.
      *
      * @param index a row's 0th based index
      * @return a whole row from this matrix
@@ -85,14 +114,15 @@ public class Matrix {
         List<Integer> theRow = new ArrayList<>(rowSize);
         final int start = index * columnSize;
         for (int i = start; i < start + columnSize; i++) {
-            theRow.add(numbers[i]);
+            theRow.add(elements[i]);
         }
 
         return theRow;
     }
 
     /**
-     * Returns a whole column from this matrix pointed by the provided column index, which is 0th based.
+     * Returns a whole column from this matrix pointed by the provided column index, which is 0th based. A column index
+     * must be a valid one. Otherwise {@link IndexOutOfBoundsException} is thrown with a proper message.
      *
      * @param index a column's 0th based index
      * @return a whole column from this matrix
@@ -103,7 +133,7 @@ public class Matrix {
 
         List<Integer> theColumn = new ArrayList<>(rowSize);
         for (int c = 0; c < rowSize; c++) {
-            theColumn.add(numbers[columnSize * c + index]);
+            theColumn.add(elements[columnSize * c + index]);
         }
 
         return theColumn;
@@ -111,7 +141,8 @@ public class Matrix {
 
     /**
      * Returns an integer that is a determinant of this matrix. Calculates this determinant if it wasn't previously
-     * calculated, otherwise returns stored value.
+     * calculated, otherwise returns stored value. Throws an {@link UnsupportedOperationException} is the matrix is
+     * not squared, since only such matrices can have determinants.
      *
      * @return a determinant of this matrix
      */
@@ -131,13 +162,13 @@ public class Matrix {
     }
 
     /**
-     * Returns an integer that is a determinant of this matrix.
+     * Returns an integer that is a determinant of this matrix. The assumption is that this matrix is a squared one.
      *
      * @return a determinant of this matrix
      */
     private int calculateDeterminant() {
         if (rowSize == 1) {
-            return numbers[0];
+            return elements[0];
         }
 
         if (rowSize == 2) {
@@ -159,7 +190,8 @@ public class Matrix {
 
     /**
      * Returns a minor matrix, that is also a squared matrix. It's created from a parent matrix by excluding whole row
-     * and whole column, that are specified in input parameters.
+     * and whole column, that are specified in input parameters. The assumption is that prent matrix and a new minor
+     * matrix are both squared matrices.
      *
      * @param row    a row number form a parent matrix to be excluded
      * @param column a column number from a parent matrix to be excluded
@@ -189,7 +221,7 @@ public class Matrix {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowSize, columnSize, numbers);
+        return Objects.hash(rowSize, columnSize, elements);
     }
 
     @Override
@@ -211,16 +243,28 @@ public class Matrix {
         return new EqualsBuilder()
                 .append(rowSize, that.rowSize)
                 .append(columnSize, that.columnSize)
-                .append(numbers, that.numbers)
+                .append(elements, that.elements)
                 .isEquals();
     }
 
+    /**
+     * Validates if row number is a valid row index inside this matrix. If not then
+     * {@link IndexOutOfBoundsException} with a proper message is thrown.
+     *
+     * @param row a row number to be validated
+     */
     private void validateRow(int row) {
         if (row < 0 || row >= rowSize) {
             throw new IndexOutOfBoundsException(String.format("Row is [%d] while row count is [%d].", row, rowSize));
         }
     }
 
+    /**
+     * Validates if column number is a valid column index inside this matrix. If not then
+     * {@link IndexOutOfBoundsException} with a proper message is thrown.
+     *
+     * @param column a column number to be validated
+     */
     private void validateColumn(int column) {
         if (column < 0 || column >= columnSize) {
             throw new IndexOutOfBoundsException(
