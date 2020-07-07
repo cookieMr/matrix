@@ -1,10 +1,8 @@
 package mr.cookie.matrix.model;
 
-import mr.cookie.matrix.utils.Generator;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.stream.Stream;
@@ -14,17 +12,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MatrixTest {
 
-    private static final Matrix MATRIX_2_BY_3 = new Matrix(2, 3, 1, 2, 3, 4, 5, 6);
+    private static final Matrix MATRIX_2_BY_3 = new SingleThreadMatrix(2, 3, 1, 2, 3, 4, 5, 6);
 
-    @NotNull
-    private static Stream<Integer> invalidRowAndColumnSizes() {
+    private static @NotNull Stream<Integer> invalidRowAndColumnSizes() {
         return Stream.of(-100, -1, 0);
     }
 
     @ParameterizedTest
     @MethodSource("invalidRowAndColumnSizes")
     void constructorRowCountCannotBeTooSmall(int rowCount) {
-        assertThatThrownBy(() -> new Matrix(rowCount, 1, 1))
+        assertThatThrownBy(() -> new SingleThreadMatrix(rowCount, 1, 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Row size must be greater than 0, it was [%d].", rowCount);
     }
@@ -32,28 +29,28 @@ class MatrixTest {
     @ParameterizedTest
     @MethodSource("invalidRowAndColumnSizes")
     void constructorColumnCountCannotBeTooSmall(int columnCount) {
-        assertThatThrownBy(() -> new Matrix(1, columnCount, 1))
+        assertThatThrownBy(() -> new SingleThreadMatrix(1, columnCount, 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Column size must be greater than 0, it was [%d].", columnCount);
     }
 
     @Test
     void constructorHasTooFewNumbersProvided() {
-        assertThatThrownBy(() -> new Matrix(2, 2, 1))
+        assertThatThrownBy(() -> new SingleThreadMatrix(2, 2, 1))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Integers must have length [%d], but the input has length of [%d].", 4, 1);
     }
 
     @Test
     void constructorHasTooManyNumbersProvided() {
-        assertThatThrownBy(() -> new Matrix(2, 2, 1, 2, 3, 4, 5))
+        assertThatThrownBy(() -> new SingleThreadMatrix(2, 2, 1, 2, 3, 4, 5))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Integers must have length [%d], but the input has length of [%d].", 4, 5);
     }
 
     @Test
     void getRowAndColumnSize() {
-        Matrix matrix = new Matrix(2, 1, 1, 2);
+        Matrix matrix = new SingleThreadMatrix(2, 1, 1, 2);
 
         assertThat(matrix.getRowSize()).isEqualTo(2);
         assertThat(matrix.getColumnSize()).isEqualTo(1);
@@ -65,8 +62,7 @@ class MatrixTest {
         assertThat(MATRIX_2_BY_3.get(1, 1)).isEqualTo(4);
     }
 
-    @NotNull
-    private static Stream<Integer> invalidRowColumnIndexes() {
+    private static @NotNull Stream<Integer> invalidRowColumnIndexes() {
         return Stream.of(-100, -1, 3, 100);
     }
 
@@ -104,8 +100,8 @@ class MatrixTest {
 
     @Test
     void isSquared() {
-        assertThat(Generator.random(1, 2).isSquared()).isFalse();
-        assertThat(Generator.random(20, 20).isSquared()).isTrue();
+        assertThat(SingleThreadMatrix.random(1, 2).isSquared()).isFalse();
+        assertThat(SingleThreadMatrix.random(20, 20).isSquared()).isTrue();
     }
 
     private static Stream<Integer> constants() {
@@ -115,37 +111,11 @@ class MatrixTest {
     @ParameterizedTest
     @MethodSource("constants")
     void multiplyByConstant(int constant) {
-        Matrix matrix = new Matrix(2, 2, 1, 2, 3, 4);
+        Matrix matrix = new SingleThreadMatrix(2, 2, 1, 2, 3, 4);
         matrix.multiplyByConstant(constant);
 
         assertThat(matrix.get(0, 0)).isEqualTo(constant);
         assertThat(matrix.get(1, 1)).isEqualTo(4 * constant);
-    }
-
-    @Test
-    void nonSquaredMatrixThrowsExceptionWhenGettingDeterminant() {
-        assertThatThrownBy(() -> Generator.random(2, 3).getDeterminant())
-                .isInstanceOf(UnsupportedOperationException.class)
-                .hasMessage("This matrix is not squared, thus it has no determinant. Its dimensions are [%dx%d].",
-                        2, 3);
-    }
-
-    @NotNull
-    private static Stream<Arguments> matricesAndDeterminants() {
-        return Stream.of(
-                Arguments.of(new Matrix(1, 1, 10), 10),
-                Arguments.of(new Matrix(2, 2, 1, 2, 3, 4), -2),
-                Arguments.of(new Matrix(2, 2, 0, 0, 100, 100), 0),
-                Arguments.of(new Matrix(3, 3, 0, 0, 0, 100, 100, 100, 100, 100, 100), 0),
-                Arguments.of(new Matrix(4, 4, 0, 1, 2, 7, 1, 2, 3, 4, 5, 6, 7, 8, -1, 1, -1, 1), -64),
-                Arguments.of(new Matrix(4, 4, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), 0)
-        );
-    }
-
-    @ParameterizedTest
-    @MethodSource("matricesAndDeterminants")
-    void getDeterminant(Matrix matrix, int determinant) {
-        assertThat(matrix.getDeterminant()).isEqualTo(determinant);
     }
 
 }

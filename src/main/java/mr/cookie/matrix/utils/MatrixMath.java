@@ -1,6 +1,7 @@
 package mr.cookie.matrix.utils;
 
 import mr.cookie.matrix.model.Matrix;
+import mr.cookie.matrix.model.SingleThreadMatrix;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -24,8 +25,7 @@ public final class MatrixMath {
      * @param m2 second matrix that will be a part of addition product
      * @return a new matrix that is a product of addition of two matrices
      */
-    @NotNull
-    public static Matrix add(@NotNull Matrix m1, @NotNull Matrix m2) {
+    public static @NotNull Matrix add(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowCount(m1, m2);
         verifyColumnCount(m1, m2);
 
@@ -41,7 +41,7 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix(rowSize, columnSize, numbers);
+        return new SingleThreadMatrix(rowSize, columnSize, numbers);
     }
 
     /**
@@ -52,8 +52,7 @@ public final class MatrixMath {
      * @param m2 second matrix which will be subtracted from the other matrix
      * @return a new matrix that is a product of subtraction of two matrices
      */
-    @NotNull
-    public static Matrix subtract(@NotNull Matrix m1, @NotNull Matrix m2) {
+    public static @NotNull Matrix subtract(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowCount(m1, m2);
         verifyColumnCount(m1, m2);
 
@@ -69,7 +68,7 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix(rowSize, columnSize, numbers);
+        return new SingleThreadMatrix(rowSize, columnSize, numbers);
     }
 
     /**
@@ -81,8 +80,7 @@ public final class MatrixMath {
      * @param m2 second matrix that will be used during multiplication
      * @return a new matrix that is a product of multiplying two matrices
      */
-    @NotNull
-    public static Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
+    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         final int rowSize = m1.getRowSize();
@@ -100,7 +98,7 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix(rowSize, rowSize, numbers);
+        return new SingleThreadMatrix(rowSize, rowSize, numbers);
     }
 
     /**
