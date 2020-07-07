@@ -16,13 +16,13 @@ public final class Generator {
     }
 
     @NotNull
-    public static Matrix<Integer> random() {
+    public static Matrix random() {
         return random(1 + RANDOM.nextInt(MAX_ALLOWED_SIZE), 1 + RANDOM.nextInt(MAX_ALLOWED_SIZE));
     }
 
     @NotNull
-    public static Matrix<Integer> random(int rowCount, int columnCount) {
-        Integer[] numbers = new Integer[rowCount * columnCount];
+    public static Matrix random(int rowCount, int columnCount) {
+        int[] numbers = new int[rowCount * columnCount];
 
         int index = 0;
         while (index < rowCount * columnCount) {
@@ -30,7 +30,7 @@ public final class Generator {
             index++;
         }
 
-        return new Matrix<>(rowCount, columnCount, numbers);
+        return new Matrix(rowCount, columnCount, numbers);
     }
 
 }

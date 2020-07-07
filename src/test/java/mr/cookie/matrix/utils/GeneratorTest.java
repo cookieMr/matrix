@@ -18,7 +18,7 @@ class GeneratorTest {
     @ParameterizedTest
     @MethodSource("matrixSizes")
     void randomRowSize(int size) {
-        Matrix<Integer> matrix = Generator.random(size, 2);
+        Matrix matrix = Generator.random(size, 2);
 
         assertThat(matrix.getRowSize())
                 .isEqualTo(size);
@@ -27,7 +27,7 @@ class GeneratorTest {
     @ParameterizedTest
     @MethodSource("matrixSizes")
     void randomColumnSize(int size) {
-        Matrix<Integer> matrix = Generator.random(2, size);
+        Matrix matrix = Generator.random(2, size);
 
         assertThat(matrix.getColumnSize())
                 .isEqualTo(size);
@@ -35,7 +35,7 @@ class GeneratorTest {
 
     @RepeatedTest(3)
     void randomMatrixGeneration() {
-        Matrix<Integer> matrix = Generator.random();
+        Matrix matrix = Generator.random();
 
         assertThat(matrix.getColumnSize())
                 .isGreaterThan(0)
