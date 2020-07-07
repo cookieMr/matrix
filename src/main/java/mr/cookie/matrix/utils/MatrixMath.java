@@ -13,14 +13,14 @@ public final class MatrixMath {
     }
 
     @NotNull
-    public static Matrix<Integer> add(@NotNull Matrix<Integer> m1, @NotNull Matrix<Integer> m2) {
+    public static Matrix add(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowCount(m1, m2);
         verifyColumnCount(m1, m2);
 
         final int rowSize = m1.getRowSize();
         final int columnSize = m1.getColumnSize();
 
-        Integer[] numbers = new Integer[rowSize * columnSize];
+        int[] numbers = new int[rowSize * columnSize];
         for (int c = 0; c < columnSize; c++) {
             List<Integer> rowM1 = m1.getRow(c);
             List<Integer> rowM2 = m2.getRow(c);
@@ -29,18 +29,18 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix<>(rowSize, columnSize, numbers);
+        return new Matrix(rowSize, columnSize, numbers);
     }
 
     @NotNull
-    public static Matrix<Integer> subtract(@NotNull Matrix<Integer> m1, @NotNull Matrix<Integer> m2) {
+    public static Matrix subtract(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowCount(m1, m2);
         verifyColumnCount(m1, m2);
 
         final int rowSize = m1.getRowSize();
         final int columnSize = m1.getColumnSize();
 
-        Integer[] numbers = new Integer[rowSize * columnSize];
+        int[] numbers = new int[rowSize * columnSize];
         for (int c = 0; c < columnSize; c++) {
             List<Integer> rowM1 = m1.getRow(c);
             List<Integer> rowM2 = m2.getRow(c);
@@ -49,15 +49,15 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix<>(rowSize, columnSize, numbers);
+        return new Matrix(rowSize, columnSize, numbers);
     }
 
     @NotNull
-    public static Matrix<Integer> multiply(@NotNull Matrix<Integer> m1, @NotNull Matrix<Integer> m2) {
+    public static Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         final int rowSize = m1.getRowSize();
-        Integer[] numbers = new Integer[rowSize * rowSize];
+        int[] numbers = new int[rowSize * rowSize];
         int index = 0;
 
         for (int c = 0; c < rowSize; c++) {
@@ -71,10 +71,10 @@ public final class MatrixMath {
             }
         }
 
-        return new Matrix<>(rowSize, rowSize, numbers);
+        return new Matrix(rowSize, rowSize, numbers);
     }
 
-    private static void verifyRowAndColumnCountsForMultiplication(Matrix<?> m1, Matrix<?> m2) {
+    private static void verifyRowAndColumnCountsForMultiplication(Matrix m1, Matrix m2) {
         if (m1.getColumnSize() != m2.getRowSize()) {
             throw new IllegalArgumentException(String.format("These two matrices can not be multiplied. " +
                     "Column count [%d] and row count [%d] are not equal.", m1.getColumnSize(), m2.getRowSize()));
@@ -86,7 +86,7 @@ public final class MatrixMath {
         }
     }
 
-    private static void verifyRowCount(Matrix<?> m1, Matrix<?> m2) {
+    private static void verifyRowCount(@NotNull Matrix m1, @NotNull Matrix m2) {
         if (m1.getRowSize() != m2.getRowSize()) {
             throw new IllegalArgumentException(
                     String.format("Both matrices must have the same row count. Provided sizes are [%d] and [%d]",
@@ -94,7 +94,7 @@ public final class MatrixMath {
         }
     }
 
-    private static void verifyColumnCount(Matrix<?> m1, Matrix<?> m2) {
+    private static void verifyColumnCount(@NotNull Matrix m1, @NotNull Matrix m2) {
         if (m1.getColumnSize() != m2.getColumnSize()) {
             throw new IllegalArgumentException(
                     String.format("Both matrices must have the same column count. Provided sizes are [%d] and [%d]",
