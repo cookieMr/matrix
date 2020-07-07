@@ -7,18 +7,25 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
- * A class that represents a matrix.
+ * An abstract class that represents a matrix.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Matrix_(mathematics)">Wikipedia - Matrix (mathematics)</a>
  */
-public class Matrix {
+public abstract class Matrix {
+
+    public static final int MAX_ALLOWED_SIZE = 1000;
+    public static final int MAX_ALLOWED_NUMBER = 100;
+
+    //TODO: move to a random package (create that package)
+    public static final Random RANDOM = new Random();
 
     private final int[] elements;
     private final int rowSize;
     private final int columnSize;
-    private Integer determinant;
+    protected Integer determinant;
 
     /**
      * Constructs new matrix with specified size and specified elements. Verifies if row & column sizes are
@@ -112,8 +119,7 @@ public class Matrix {
      * @param index a row's 0th based index
      * @return a whole row from this matrix
      */
-    @NotNull
-    public List<Integer> getRow(int index) {
+    public @NotNull List<Integer> getRow(int index) {
         validateRow(index);
 
         List<Integer> theRow = new ArrayList<>(rowSize);
@@ -132,8 +138,7 @@ public class Matrix {
      * @param index a column's 0th based index
      * @return a whole column from this matrix
      */
-    @NotNull
-    public List<Integer> getColumn(int index) {
+    public @NotNull List<Integer> getColumn(int index) {
         validateColumn(index);
 
         List<Integer> theColumn = new ArrayList<>(rowSize);
@@ -151,47 +156,14 @@ public class Matrix {
      *
      * @return a determinant of this matrix
      */
-    //TODO: make it thread safe
-    public int getDeterminant() {
-        if (!isSquared()) {
-            throw new UnsupportedOperationException(String.format(
-                    "This matrix is not squared, thus it has no determinant. Its dimensions are [%dx%d].",
-                    rowSize, columnSize));
-        }
-
-        if (determinant == null) {
-            determinant = calculateDeterminant();
-        }
-
-        return determinant;
-    }
+    public abstract int getDeterminant();
 
     /**
      * Returns an integer that is a determinant of this matrix. The assumption is that this matrix is a squared one.
      *
      * @return a determinant of this matrix
      */
-    private int calculateDeterminant() {
-        if (rowSize == 1) {
-            return elements[0];
-        }
-
-        if (rowSize == 2) {
-            return get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1);
-        }
-
-        int sum = 0;
-        for (int c = 0; c < rowSize; c++) {
-            int s = get(0, c) * minorMatrix(0, c).getDeterminant();
-            if (c % 2 == 0) {
-                sum += s;
-            } else {
-                sum -= s;
-            }
-        }
-
-        return sum;
-    }
+    protected abstract int calculateDeterminant();
 
     /**
      * Returns a minor matrix, that is also a squared matrix. It's created from a parent matrix by excluding whole row
@@ -203,26 +175,7 @@ public class Matrix {
      * @return a squared matrix, that is a minor matrix created by excluded specific row & column from a parent matrix
      * @see <a href="https://en.wikipedia.org/wiki/Laplace_expansion">Laplace Expansion</a>
      */
-    @NotNull
-    private Matrix minorMatrix(int row, int column) {
-        final int minorSize = rowSize - 1;
-        int[] minorNumber = new int[minorSize * minorSize];
-        int index = 0;
-
-        for (int c = 0; c < rowSize; c++) {
-            if (c == column) {
-                continue;
-            }
-            for (int r = 0; r < rowSize; r++) {
-                if (r == row) {
-                    continue;
-                }
-                minorNumber[index++] = get(r, c);
-            }
-        }
-
-        return new Matrix(minorSize, minorSize, minorNumber);
-    }
+    protected abstract @NotNull Matrix minorMatrix(int row, int column);
 
     @Override
     public int hashCode() {
