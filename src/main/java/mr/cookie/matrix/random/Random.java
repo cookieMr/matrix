@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A proxy for {@link java.util.Random}
+ * A proxy for {@link java.util.Random}.
  */
 public final class Random {
 
