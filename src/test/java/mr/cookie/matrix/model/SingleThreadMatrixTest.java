@@ -2,7 +2,6 @@ package mr.cookie.matrix.model;
 
 
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -37,7 +36,7 @@ class SingleThreadMatrixTest {
                 .isEqualTo(size);
     }
 
-    @RepeatedTest(3)
+    @Test
     void randomMatrixGeneration() {
         Matrix matrix = SingleThreadMatrix.random();
 

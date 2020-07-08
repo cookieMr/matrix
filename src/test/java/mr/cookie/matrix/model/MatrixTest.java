@@ -104,7 +104,7 @@ class MatrixTest {
         assertThat(SingleThreadMatrix.random(20, 20).isSquared()).isTrue();
     }
 
-    private static Stream<Integer> constants() {
+    private static @NotNull Stream<Integer> constants() {
         return Stream.of(-100, -1, 0, 1, 2, 99);
     }
 

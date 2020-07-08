@@ -1,5 +1,6 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,7 +23,6 @@ public final class SingleThreadMatrix extends Matrix {
         super(rowSize, columnSize, elements);
     }
 
-
     /**
      * Returns a matrix with random row & column count and with random elements in it.<br/>
      * Row count is between 1 and 1000 (same goes for column count).<br/>
@@ -31,7 +31,7 @@ public final class SingleThreadMatrix extends Matrix {
      * @return a fully populated matrix
      */
     public static @NotNull SingleThreadMatrix random() {
-        return random(1 + RANDOM.nextInt(MAX_ALLOWED_SIZE), 1 + RANDOM.nextInt(MAX_ALLOWED_SIZE));
+        return random(1 + Random.nextInt(MAX_ALLOWED_SIZE), 1 + Random.nextInt(MAX_ALLOWED_SIZE));
     }
 
     /**
@@ -47,7 +47,7 @@ public final class SingleThreadMatrix extends Matrix {
 
         int index = 0;
         while (index < rowCount * columnCount) {
-            numbers[index] = MAX_ALLOWED_NUMBER - RANDOM.nextInt(2 * MAX_ALLOWED_NUMBER);
+            numbers[index] = MAX_ALLOWED_NUMBER - Random.nextInt(2 * MAX_ALLOWED_NUMBER);
             index++;
         }
 
