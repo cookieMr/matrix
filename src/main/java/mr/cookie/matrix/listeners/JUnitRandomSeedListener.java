@@ -1,8 +1,11 @@
-package mr.cookie.matrix.random;
+package mr.cookie.matrix.listeners;
 
+import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 import org.junit.platform.launcher.TestExecutionListener;
 import org.junit.platform.launcher.TestIdentifier;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
@@ -18,6 +21,8 @@ import java.util.Optional;
  * file.
  */
 public class JUnitRandomSeedListener implements TestExecutionListener {
+
+    private static final Logger LOG = LoggerFactory.getLogger(JUnitRandomSeedListener.class);
 
     /**
      * The seed for pseudorandom generator. It's either taken from an application input parameter
@@ -35,10 +40,7 @@ public class JUnitRandomSeedListener implements TestExecutionListener {
      */
     @Override
     public void executionStarted(@NotNull TestIdentifier testIdentifier) {
-        // TODO proper logging
-        System.out.println(String.format("Test [%s] will be run with a seed [%d]",
-                testIdentifier.getDisplayName(), SEED));
-
+        LOG.info("Test [{}] will be run with a seed [{}].", testIdentifier.getDisplayName(), SEED);
         Random.setSeed(SEED);
     }
 
