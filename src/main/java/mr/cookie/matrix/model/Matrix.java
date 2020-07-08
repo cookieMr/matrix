@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * An abstract class that represents a matrix.
@@ -18,9 +17,6 @@ public abstract class Matrix {
 
     public static final int MAX_ALLOWED_SIZE = 1000;
     public static final int MAX_ALLOWED_NUMBER = 100;
-
-    //TODO: move to a random package (create that package)
-    public static final Random RANDOM = new Random();
 
     private final int[] elements;
     private final int rowSize;
