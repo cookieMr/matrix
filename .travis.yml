@@ -11,4 +11,4 @@ addons:
     organization: "cookiemr-github"
 
 script:
-  - sonar-scanner
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=cookieMr_matrix
