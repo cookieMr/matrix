@@ -18,8 +18,11 @@ public final class Random {
     private static final AtomicLong SEED = new AtomicLong(System.currentTimeMillis());
 
     /**
-     * A Java's pseudo-random generator which is proxied by this class.
+     * A Java's pseudo-random generator which is proxied by this class.<br/>
+     * <b>Note:</b> This Pseudo-random number generator (PRNG) is not secure.
+     * It reproduces "random" numbers on purpose!
      */
+    @SuppressWarnings("squid:S2245")
     private static final AtomicReference<java.util.Random> PSEUDO_RANDOM_GENERATOR =
             new AtomicReference<>(new java.util.Random(SEED.get()));
 
