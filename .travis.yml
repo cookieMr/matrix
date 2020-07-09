@@ -3,3 +3,13 @@ language: java
 jdk:
   - openjdk8
   - openjdk11
+
+# for more details see the following link
+# https://docs.travis-ci.com/user/sonarcloud/#inspecting-code-with-the-sonarqube-scanner
+# the token is set as an environmental var, which is avaliable only by Travis job
+addons:
+  sonarcloud:
+    organization: "cookiemr-github"
+
+script:
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=cookieMr_matrix
