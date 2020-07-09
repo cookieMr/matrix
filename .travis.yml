@@ -6,6 +6,7 @@ jdk:
 
 # for more details see the following link
 # https://docs.travis-ci.com/user/sonarcloud/#inspecting-code-with-the-sonarqube-scanner
+# the token is set as an environmental var, which is avaliable only by Travis job
 addons:
   sonarcloud:
     organization: "cookiemr-github"
