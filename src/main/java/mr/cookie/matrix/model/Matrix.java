@@ -55,6 +55,21 @@ public abstract class Matrix {
     }
 
     /**
+     * Constructs new matrix with specified size and specified elements. Verifies if row & column sizes are
+     * greater than zero and that input elements can fill up whole matrix (their size is exactly
+     * {@code rowSize * columnSize}). If not then {@link IllegalArgumentException} with a proper message is thrown.
+     *
+     * @param rowSize    a number of rows in the new matrix (must be greater than zero)
+     * @param columnSize a number of column in the new matrix (must be greater than zero)
+     * @param elements   list of elements of the new matrix, it needs to be the length of {@code rowSize * columnSize}
+     */
+    public Matrix(int rowSize, int columnSize, @NotNull List<Integer> elements) {
+        this(rowSize, columnSize, elements.stream()
+                .mapToInt(Integer::intValue)
+                .toArray());
+    }
+
+    /**
      * Returns a new matrix that is a product of addition of two input matrices. Both matrices need to have the same
      * size (row count and column count). Otherwise {@link IllegalArgumentException} will be thrown.
      *
@@ -206,14 +221,46 @@ public abstract class Matrix {
      *
      * @return a determinant of this matrix
      */
-    public abstract int getDeterminant();
+    public int getDeterminant() {
+        if (!isSquared()) {
+            throw new UnsupportedOperationException(String.format(
+                    "This matrix is not squared, thus it has no determinant. Its dimensions are [%dx%d].",
+                    getRowSize(), getColumnSize()));
+        }
+
+        if (determinant == null) {
+            determinant = calculateDeterminant();
+        }
+
+        return determinant;
+    }
 
     /**
      * Returns an integer that is a determinant of this matrix. The assumption is that this matrix is a squared one.
      *
      * @return a determinant of this matrix
      */
-    protected abstract int calculateDeterminant();
+    protected int calculateDeterminant() {
+        if (getRowSize() == 1) {
+            return get(0, 0);
+        }
+
+        if (getRowSize() == 2) {
+            return get(0, 0) * get(1, 1) - get(1, 0) * get(0, 1);
+        }
+
+        int sum = 0;
+        for (int c = 0; c < getRowSize(); c++) {
+            int s = get(0, c) * minorMatrix(0, c).getDeterminant();
+            if (c % 2 == 0) {
+                sum += s;
+            } else {
+                sum -= s;
+            }
+        }
+
+        return sum;
+    }
 
     /**
      * Returns a minor matrix, that is also a squared matrix. It's created from a parent matrix by excluding whole row
@@ -226,6 +273,34 @@ public abstract class Matrix {
      * @see <a href="https://en.wikipedia.org/wiki/Laplace_expansion">Laplace Expansion</a>
      */
     protected abstract @NotNull Matrix minorMatrix(int row, int column);
+
+    /**
+     * Returns elements for minor matrix which size is less by 1 on each side compared to the parent matrix.
+     * Returned elements do not contain values from specified row nor column.
+     *
+     * @param row    a row number form a parent matrix to be excluded
+     * @param column a column number from a parent matrix to be excluded
+     * @return elements for minor matrix
+     */
+    protected @NotNull int[] getMinorMatrixElements(int row, int column) {
+        int minorSize = getRowSize() - 1;
+        int[] minorNumber = new int[minorSize * minorSize];
+        int index = 0;
+
+        for (int c = 0; c < getRowSize(); c++) {
+            if (c == column) {
+                continue;
+            }
+            for (int r = 0; r < getRowSize(); r++) {
+                if (r == row) {
+                    continue;
+                }
+                minorNumber[index++] = get(r, c);
+            }
+        }
+
+        return minorNumber;
+    }
 
     @Override
     public int hashCode() {
@@ -261,7 +336,7 @@ public abstract class Matrix {
      *
      * @param row a row number to be validated
      */
-    private void validateRow(int row) {
+    protected void validateRow(int row) {
         if (row < 0 || row >= rowSize) {
             throw new IndexOutOfBoundsException(String.format("Row is [%d] while row count is [%d].", row, rowSize));
         }
@@ -273,7 +348,7 @@ public abstract class Matrix {
      *
      * @param column a column number to be validated
      */
-    private void validateColumn(int column) {
+    protected void validateColumn(int column) {
         if (column < 0 || column >= columnSize) {
             throw new IndexOutOfBoundsException(
                     String.format("Column is [%d] while column count is [%d].", column, columnSize));
@@ -306,7 +381,7 @@ public abstract class Matrix {
      * @param m1 first matrix which row count will be compared with the other matrix
      * @param m2 second matrix which row count will be compared with the other matrix
      */
-    private static void verifyRowCount(@NotNull Matrix m1, @NotNull Matrix m2) {
+    protected static void verifyRowCount(@NotNull Matrix m1, @NotNull Matrix m2) {
         if (m1.getRowSize() != m2.getRowSize()) {
             throw new IllegalArgumentException(
                     String.format("Both matrices must have the same row count. Provided sizes are [%d] and [%d]",
@@ -321,7 +396,7 @@ public abstract class Matrix {
      * @param m1 first matrix which column count will be compared with the other matrix
      * @param m2 second matrix which column count will be compared with the other matrix
      */
-    private static void verifyColumnCount(@NotNull Matrix m1, @NotNull Matrix m2) {
+    protected static void verifyColumnCount(@NotNull Matrix m1, @NotNull Matrix m2) {
         if (m1.getColumnSize() != m2.getColumnSize()) {
             throw new IllegalArgumentException(
                     String.format("Both matrices must have the same column count. Provided sizes are [%d] and [%d]",
