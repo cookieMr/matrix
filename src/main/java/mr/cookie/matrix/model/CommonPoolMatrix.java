@@ -104,11 +104,21 @@ public final class CommonPoolMatrix extends Matrix {
             numbers.addAll(row.get());
         }
 
-        numbers.toArray(new Integer[rowSize * rowSize]);
+        //TODO: i am confused... because of this line tests for multiplication run 3.5s
+        // without it tests run 5s... why??? optimization??? but how???
+         numbers.toArray(new Integer[rowSize * rowSize]);
 
         return new CommonPoolMatrix(rowSize, rowSize, numbers);
     }
 
+    /**
+     * Returns a {@link Future} that calculates a result row.
+     *
+     * @param rowIndex an index of a row, which will be multiplied by the 2nd matrix
+     * @param m1       1st matrix to multiply
+     * @param m2       2nd matrix to multiply
+     * @return a future object, that will yield result of a specified row multiplied by the 2nd matrix
+     */
     private static @NotNull Future<List<Integer>> multiplyRow(int rowIndex, @NotNull Matrix m1, @NotNull Matrix m2) {
         int rowSize = m1.getRowSize();
 
