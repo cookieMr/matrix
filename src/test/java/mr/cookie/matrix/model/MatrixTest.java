@@ -1,6 +1,7 @@
 package mr.cookie.matrix.model;
 
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -16,6 +17,62 @@ class MatrixTest {
 
     private static @NotNull Stream<Integer> invalidRowAndColumnSizes() {
         return Stream.of(-100, -1, 0);
+    }
+
+    @Test
+    void invalidRowSizesWhileAddingThrowException() {
+        Matrix m1 = SingleThreadMatrix.random(1, 2);
+        Matrix m2 = SingleThreadMatrix.random(2, 2);
+
+        assertThatThrownBy(() -> Matrix.add(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same row count. Provided sizes are [%d] and [%d]", 1, 2);
+        assertThatThrownBy(() -> Matrix.subtract(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same row count. Provided sizes are [%d] and [%d]", 1, 2);
+    }
+
+    @Test
+    void invalidColumnSizesWhileAddingThrowException() {
+        Matrix m1 = SingleThreadMatrix.random(2, 1);
+        Matrix m2 = SingleThreadMatrix.random(2, 2);
+
+        assertThatThrownBy(() -> Matrix.add(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same column count. Provided sizes are [%d] and [%d]", 1, 2);
+        assertThatThrownBy(() -> Matrix.subtract(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Both matrices must have the same column count. Provided sizes are [%d] and [%d]", 1, 2);
+    }
+
+    @Test
+    void add() {
+        Matrix matrix1 = new SingleThreadMatrix(2, 2, 1, 2, 3, 4);
+        Matrix matrix2 = new SingleThreadMatrix(2, 2, 4, 3, 2, 1);
+        Matrix result = Matrix.add(matrix1, matrix2);
+
+        Assertions.assertAll(
+                () -> assertThat(result.getRowSize()).isEqualTo(matrix1.getRowSize()),
+                () -> assertThat(result.getColumnSize()).isEqualTo(matrix1.getColumnSize()),
+                () -> assertThat(result.get(0, 0)).isEqualTo(5),
+                () -> assertThat(result.get(1, 1)).isEqualTo(5),
+                () -> assertThat(result).isEqualTo(new SingleThreadMatrix(2, 2, 5, 5, 5, 5))
+        );
+    }
+
+    @Test
+    void subtract() {
+        Matrix matrix1 = new SingleThreadMatrix(2, 2, 1, 2, 3, 4);
+        Matrix matrix2 = new SingleThreadMatrix(2, 2, 4, 3, 2, 1);
+        Matrix result = Matrix.subtract(matrix1, matrix2);
+
+        Assertions.assertAll(
+                () -> assertThat(result.getRowSize()).isEqualTo(matrix1.getRowSize()),
+                () -> assertThat(result.getColumnSize()).isEqualTo(matrix1.getColumnSize()),
+                () -> assertThat(result.get(0, 0)).isEqualTo(-3),
+                () -> assertThat(result.get(1, 1)).isEqualTo(3),
+                () -> assertThat(result).isEqualTo(new SingleThreadMatrix(2, 2, -3, -1, 1, 3))
+        );
     }
 
     @ParameterizedTest

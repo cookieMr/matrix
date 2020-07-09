@@ -73,4 +73,40 @@ class SingleThreadMatrixTest {
         assertThat(matrix.getDeterminant()).isEqualTo(determinant);
     }
 
+    @Test
+    void firstConditionOfRowAndColumnCheckThrowsException() {
+        Matrix m1 = SingleThreadMatrix.random(2, 3);
+        Matrix m2 = SingleThreadMatrix.random(2, 3);
+
+        assertThatThrownBy(() -> SingleThreadMatrix.multiply(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("These two matrices can not be multiplied. " +
+                        "Column count [%d] and row count [%d] are not equal.", 3, 2);
+    }
+
+    @Test
+    void secondConditionOfRowAndColumnCheckThrowsException() {
+        Matrix m1 = SingleThreadMatrix.random(2, 3);
+        Matrix m2 = SingleThreadMatrix.random(3, 3);
+
+        assertThatThrownBy(() -> SingleThreadMatrix.multiply(m1, m2))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("These two matrices can not be multiplied. " +
+                        "Row count [%d] and column count [%d] are not equal.", 2, 3);
+    }
+
+    @Test
+    void multiply() {
+        Matrix matrix1 = new SingleThreadMatrix(2, 3, 1, 0, 2, -1, 3, 1);
+        Matrix matrix2 = new SingleThreadMatrix(3, 2, 3, 1, 2, 1, 1, 0);
+
+        Matrix expected1 = new SingleThreadMatrix(2, 2, 5, 1, 4, 2);
+        Matrix result1 = SingleThreadMatrix.multiply(matrix1, matrix2);
+        assertThat(result1).isEqualTo(expected1);
+
+        Matrix expected2 = new SingleThreadMatrix(3, 3, 2, 3, 7, 1, 3, 5, 1, 0, 2);
+        Matrix result2 = SingleThreadMatrix.multiply(matrix2, matrix1);
+        assertThat(result2).isEqualTo(expected2);
+    }
+
 }
