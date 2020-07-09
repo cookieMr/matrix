@@ -7,10 +7,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SingleThreadMatrixTest {
@@ -42,16 +42,18 @@ class SingleThreadMatrixTest {
         Matrix matrix = SingleThreadMatrix.random();
 
         assertThat(matrix.getColumnSize())
-                .isGreaterThan(0)
+                .isPositive()
                 .isLessThanOrEqualTo(1000);
         assertThat(matrix.getRowSize())
-                .isGreaterThan(0)
+                .isPositive()
                 .isLessThanOrEqualTo(1000);
     }
 
     @Test
     void nonSquaredMatrixThrowsExceptionWhenGettingDeterminant() {
-        assertThatThrownBy(() -> SingleThreadMatrix.random(2, 3).getDeterminant())
+        Matrix matrix = SingleThreadMatrix.random(2, 3);
+
+        assertThatThrownBy(matrix::getDeterminant)
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessage("This matrix is not squared, thus it has no determinant. Its dimensions are [%dx%d].",
                         2, 3);
@@ -116,10 +118,9 @@ class SingleThreadMatrixTest {
 
     @ParameterizedTest
     @MethodSource("exponentSizes")
-    void singleThreadMultiplyWithIncreasingSize(int size) throws ExecutionException, InterruptedException {
+    void singleThreadMultiplyWithIncreasingSize(int size) {
         Matrix matrix = SingleThreadMatrix.random(size, size);
-        SingleThreadMatrix.multiply(matrix, matrix);
+        assertThatCode(() -> SingleThreadMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
     }
-
 
 }
