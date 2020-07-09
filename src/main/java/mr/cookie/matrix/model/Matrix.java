@@ -1,12 +1,15 @@
 package mr.cookie.matrix.model;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * An abstract class that represents a matrix.
@@ -187,13 +190,10 @@ public abstract class Matrix {
     public @NotNull List<Integer> getRow(int index) {
         validateRow(index);
 
-        List<Integer> theRow = new ArrayList<>(rowSize);
         final int start = index * columnSize;
-        for (int i = start; i < start + columnSize; i++) {
-            theRow.add(elements[i]);
-        }
 
-        return theRow;
+        int[] subArray = ArrayUtils.subarray(elements, start, start + columnSize);
+        return Arrays.stream(subArray).boxed().collect(Collectors.toList());
     }
 
     /**

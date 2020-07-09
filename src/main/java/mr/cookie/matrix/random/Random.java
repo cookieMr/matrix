@@ -8,16 +8,20 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 public final class Random {
 
+    private Random() {
+        throw new UnsupportedOperationException("Random class should never be instantiated.");
+    }
+
     /**
      * A seed for this pseudo-random generator.
      */
-    private static final AtomicLong seed = new AtomicLong(System.currentTimeMillis());
+    private static final AtomicLong SEED = new AtomicLong(System.currentTimeMillis());
 
     /**
      * A Java's pseudo-random generator which is proxied by this class.
      */
-    private static final AtomicReference<java.util.Random> random =
-            new AtomicReference<>(new java.util.Random(seed.get()));
+    private static final AtomicReference<java.util.Random> PSEUDO_RANDOM_GENERATOR =
+            new AtomicReference<>(new java.util.Random(SEED.get()));
 
     /**
      * Returns a seed for this pseudo-random generator.
@@ -25,12 +29,17 @@ public final class Random {
      * @return a seed for this pseudo-random generator
      */
     public static long getSeed() {
-        return seed.get();
+        return SEED.get();
     }
 
+    /**
+     * Sets a seed and resets pseudo-random generator's seed to provided value.
+     *
+     * @param seed a new seed
+     */
     public static void setSeed(long seed) {
-        Random.seed.set(seed);
-        Random.random.get().setSeed(seed);
+        Random.SEED.set(seed);
+        Random.PSEUDO_RANDOM_GENERATOR.get().setSeed(seed);
     }
 
     /**
@@ -40,7 +49,7 @@ public final class Random {
      * @return a pseudo-random primitive integer
      */
     public static int nextInt() {
-        return random.get().nextInt();
+        return PSEUDO_RANDOM_GENERATOR.get().nextInt();
     }
 
     /**
@@ -51,7 +60,7 @@ public final class Random {
      * @return a pseudo-random primitive integer
      */
     public static int nextInt(int bound) {
-        return random.get().nextInt(bound);
+        return PSEUDO_RANDOM_GENERATOR.get().nextInt(bound);
     }
 
     /**
@@ -61,7 +70,7 @@ public final class Random {
      * @return a pseudo-random primitive long
      */
     public static long nextLong() {
-        return random.get().nextLong();
+        return PSEUDO_RANDOM_GENERATOR.get().nextLong();
     }
 
     /**
@@ -72,7 +81,7 @@ public final class Random {
      * @return a pseudo-random primitive long
      */
     public static long nextInt(long bound) {
-        return random.get().nextLong() % bound;
+        return PSEUDO_RANDOM_GENERATOR.get().nextLong() % bound;
     }
 
 }
