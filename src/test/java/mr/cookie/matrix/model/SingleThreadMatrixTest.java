@@ -42,10 +42,10 @@ class SingleThreadMatrixTest {
 
         assertThat(matrix.getColumnSize())
                 .isGreaterThan(0)
-                .isLessThan(1000);
+                .isLessThanOrEqualTo(1000);
         assertThat(matrix.getRowSize())
                 .isGreaterThan(0)
-                .isLessThan(1000);
+                .isLessThanOrEqualTo(1000);
     }
 
     @Test
