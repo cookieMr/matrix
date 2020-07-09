@@ -9,6 +9,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class CommonPoolMatrixTest {
 
@@ -32,9 +33,9 @@ class CommonPoolMatrixTest {
 
     @ParameterizedTest
     @MethodSource("exponentSizes")
-    void commonPoolMultiplyWithIncreasingSize(int size) throws ExecutionException, InterruptedException {
+    void commonPoolMultiplyWithIncreasingSize(int size) {
         Matrix matrix = CommonPoolMatrix.random(size, size);
-        CommonPoolMatrix.multiply(matrix, matrix);
+        assertThatCode(() -> CommonPoolMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
     }
 
 }
