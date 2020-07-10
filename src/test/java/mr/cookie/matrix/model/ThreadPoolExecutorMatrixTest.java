@@ -70,7 +70,7 @@ class ThreadPoolExecutorMatrixTest {
 
     @ParameterizedTest
     @MethodSource("mixedExecutorsAndSizes")
-    void customThreadPoolMultiplyWithIncreasingSize(ExecutorService executor, int size) {
+    void customThreadPoolMultiplyWithIncreasingSize(@NotNull ExecutorService executor, int size) {
         ThreadPoolExecutorMatrix.setExecutor(executor);
 
         Matrix matrix = ThreadPoolExecutorMatrix.random(size, size);
