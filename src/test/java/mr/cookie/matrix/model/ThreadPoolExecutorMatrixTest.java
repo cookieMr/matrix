@@ -74,7 +74,7 @@ class ThreadPoolExecutorMatrixTest {
         ThreadPoolExecutorMatrix.setExecutor(executor);
 
         Matrix matrix = ThreadPoolExecutorMatrix.random(size, size);
-        assertThatCode(() -> CommonPoolMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
+        assertThatCode(() -> ThreadPoolExecutorMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
     }
 
 }
