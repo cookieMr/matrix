@@ -54,8 +54,8 @@ public class JUnitElapsedTimeListener implements TestExecutionListener {
         }
 
         if (LOG.isInfoEnabled()) {
-            float elapsedTime = (float) (end - start) / 1000;
-            LOG.info("[{}] micro seconds elapse during execution of [{}].",
+            float elapsedTime = (float) (end - start) / 1_000_000;
+            LOG.info("[{}] milli seconds elapse during execution of [{}].",
                     elapsedTime, testIdentifier.getDisplayName());
         }
     }

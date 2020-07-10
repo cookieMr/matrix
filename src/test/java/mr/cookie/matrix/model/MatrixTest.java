@@ -133,7 +133,7 @@ class MatrixTest {
     void getByInvalidRow(int row) {
         assertThatThrownBy(() -> MATRIX_2_BY_3.get(row, 1))
                 .isInstanceOf(IndexOutOfBoundsException.class)
-                .hasMessage("Row is [%d] while row count is [%d].", row, MATRIX_2_BY_3.getRowSize());
+                .hasMessage("Row index is [%d] while row count is [%d].", row, MATRIX_2_BY_3.getRowSize());
     }
 
     @ParameterizedTest
@@ -141,7 +141,8 @@ class MatrixTest {
     void getByInvalidColumn(int column) {
         assertThatThrownBy(() -> MATRIX_2_BY_3.get(1, column))
                 .isInstanceOf(IndexOutOfBoundsException.class)
-                .hasMessage("Column is [%d] while column count is [%d].", column, MATRIX_2_BY_3.getColumnSize());
+                .hasMessage("Column index is [%d] while column count is [%d].",
+                        column, MATRIX_2_BY_3.getColumnSize());
     }
 
     @Test
@@ -191,7 +192,9 @@ class MatrixTest {
                 new SingleThreadMatrix(3, 3, primitiveIntegers),
                 new SingleThreadMatrix(3, 3, boxedIntegers),
                 new CommonPoolMatrix(3, 3, primitiveIntegers),
-                new CommonPoolMatrix(3, 3, boxedIntegers)
+                new CommonPoolMatrix(3, 3, boxedIntegers),
+                new ThreadPoolExecutorMatrix(3, 3, primitiveIntegers),
+                new ThreadPoolExecutorMatrix(3, 3, boxedIntegers)
         );
 
         for (Matrix matrix : matrices) {

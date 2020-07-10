@@ -14,7 +14,8 @@ import java.util.stream.IntStream;
 /**
  * An implementation of an abstract {@link Matrix} class with a common thread pool
  * ({@link ForkJoinPool#commonPool()}). Multiplication of two matrices is spread
- * across available threads in the common thread pool.
+ * across available threads in the common thread pool and each thread returns a
+ * {@link Future}, which holds a single row for the resulting matrix.
  *
  * @see Matrix
  */
@@ -60,14 +61,7 @@ public final class CommonPoolMatrix extends Matrix {
      * @return a fully populated matrix
      */
     public static @NotNull CommonPoolMatrix random(int rowCount, int columnCount) {
-        int[] numbers = new int[rowCount * columnCount];
-
-        int index = 0;
-        while (index < rowCount * columnCount) {
-            numbers[index] = MAX_ALLOWED_NUMBER - Random.nextInt(2 * MAX_ALLOWED_NUMBER);
-            index++;
-        }
-
+        int[] numbers = getRandomElements(rowCount * columnCount);
         return new CommonPoolMatrix(rowCount, columnCount, numbers);
     }
 
