@@ -6,9 +6,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class MatrixApplicationTest {
 
+    @SuppressWarnings("squid:S2699")
     @Test
-    public void contextLoads() {
-        // checks if spring boot runs with no errors
+    void contextLoads() {
+        // test is context loads, suppressing sonar issue on purpose
     }
 
 }
