@@ -1,5 +1,6 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.random.Random;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -342,7 +343,7 @@ public abstract class Matrix {
      */
     protected void validateRow(int row) {
         if (row < 0 || row >= rowSize) {
-            throw new IndexOutOfBoundsException(String.format("Row is [%d] while row count is [%d].", row, rowSize));
+            throw new IndexOutOfBoundsException(String.format("Row index is [%d] while row count is [%d].", row, rowSize));
         }
     }
 
@@ -355,8 +356,26 @@ public abstract class Matrix {
     protected void validateColumn(int column) {
         if (column < 0 || column >= columnSize) {
             throw new IndexOutOfBoundsException(
-                    String.format("Column is [%d] while column count is [%d].", column, columnSize));
+                    String.format("Column index is [%d] while column count is [%d].", column, columnSize));
         }
+    }
+
+    /**
+     * Returns a primitive integers' array of specified size generated with the use
+     * of a repeatable PRNG {@link Random}.
+     *
+     * @param size count of elements to be generated
+     * @return a primitive integers' array of specified size
+     */
+    protected static int[] getRandomElements(int size) {
+        int[] numbers = new int[size];
+
+        int index = 0;
+        while (index < size) {
+            numbers[index] = MAX_ALLOWED_NUMBER - Random.nextInt(2 * MAX_ALLOWED_NUMBER);
+            index++;
+        }
+        return numbers;
     }
 
     /**

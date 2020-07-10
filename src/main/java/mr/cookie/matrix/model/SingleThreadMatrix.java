@@ -78,14 +78,7 @@ public final class SingleThreadMatrix extends Matrix {
      * @return a fully populated matrix
      */
     public static @NotNull SingleThreadMatrix random(int rowCount, int columnCount) {
-        int[] numbers = new int[rowCount * columnCount];
-
-        int index = 0;
-        while (index < rowCount * columnCount) {
-            numbers[index] = MAX_ALLOWED_NUMBER - Random.nextInt(2 * MAX_ALLOWED_NUMBER);
-            index++;
-        }
-
+        int[] numbers = getRandomElements(rowCount * columnCount);
         return new SingleThreadMatrix(rowCount, columnCount, numbers);
     }
 
