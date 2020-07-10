@@ -2,7 +2,6 @@ package mr.cookie.matrix.model;
 
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.stream.IntStream;
@@ -96,13 +95,4 @@ public final class SingleThreadMatrix extends Matrix {
         return new SingleThreadMatrix(minorSize, minorSize, getMinorMatrixElements(row, column));
     }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(@Nullable Object o) {
-        return super.equals(o);
-    }
 }
