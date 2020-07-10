@@ -19,11 +19,13 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 
 class ThreadPoolExecutorMatrixTest {
 
+    private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+
     private static @NotNull Stream<ExecutorService> executorServices() {
         return Stream.of(
-                Executors.newFixedThreadPool(10),
+                Executors.newFixedThreadPool(THREAD_POOL_SIZE),
                 Executors.newCachedThreadPool(),
-                Executors.newScheduledThreadPool(7),
+                Executors.newScheduledThreadPool(THREAD_POOL_SIZE),
                 Executors.newWorkStealingPool(),
                 Executors.newSingleThreadExecutor()
         );

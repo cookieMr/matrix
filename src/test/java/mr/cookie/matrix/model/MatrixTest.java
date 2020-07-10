@@ -1,11 +1,13 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -182,7 +184,7 @@ class MatrixTest {
     }
 
     @Test
-    void equalsContractForAllMatrixImplementation() {
+    void equalsAndHashCodeContractsForAllMatrixImplementation() {
         int[] primitiveIntegers = IntStream.range(1, 10).toArray();
         List<Integer> boxedIntegers = IntStream.range(1, 10)
                 .boxed()
@@ -200,14 +202,36 @@ class MatrixTest {
         for (Matrix matrix : matrices) {
             assertThat(matrices)
                     .allMatch(m -> m.hashCode() == matrix.hashCode())
+                    .allMatch(matrix::equals)
+                    .allMatch(m -> m.getDeterminant() == matrix.getDeterminant());
+        }
+    }
+
+    @Test
+    void equalsAndHashcodeContractsForRandomMatrices() {
+        long seed = System.currentTimeMillis();
+        Collection<Matrix> matrices = new ArrayList<>();
+
+        Random.setSeed(seed);
+        matrices.add(SingleThreadMatrix.random());
+        Random.setSeed(seed);
+        matrices.add(CommonPoolMatrix.random());
+        Random.setSeed(seed);
+        matrices.add(ThreadPoolExecutorMatrix.random());
+
+        for (Matrix matrix : matrices) {
+            assertThat(matrices)
+                    .allMatch(m -> m.hashCode() == matrix.hashCode())
                     .allMatch(matrix::equals);
         }
+    }
 
-        int expectedDeterminant = 0;
-        assertThat(matrices)
-                .extracting(Matrix::getDeterminant)
-                .hasSize(matrices.size())
-                .containsOnly(expectedDeterminant);
+    @Test
+    void notEqualObjects() {
+        Matrix matrix = CommonPoolMatrix.random();
+        Collection<Object> objects = Arrays.asList(null, new Object(), CommonPoolMatrix.random());
+
+        assertThat(objects).noneMatch(matrix::equals);
     }
 
 }
