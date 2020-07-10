@@ -106,7 +106,7 @@ public final class CommonPoolMatrix extends Matrix {
 
         //TODO: i am confused... because of this line tests for multiplication run 3.5s
         // without it tests run 5s... why??? optimization??? but how???
-         numbers.toArray(new Integer[rowSize * rowSize]);
+        numbers.toArray(new Integer[rowSize * rowSize]);
 
         return new CommonPoolMatrix(rowSize, rowSize, numbers);
     }
