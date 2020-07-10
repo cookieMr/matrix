@@ -195,7 +195,9 @@ class MatrixTest {
         );
 
         for (Matrix matrix : matrices) {
-            assertThat(matrices).allMatch(matrix::equals);
+            assertThat(matrices)
+                    .allMatch(m -> m.hashCode() == matrix.hashCode())
+                    .allMatch(matrix::equals);
         }
 
         int expectedDeterminant = 0;
