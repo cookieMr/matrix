@@ -2,13 +2,13 @@ package mr.cookie.matrix.model;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -304,7 +304,11 @@ public abstract class Matrix {
 
     @Override
     public int hashCode() {
-        return Objects.hash(rowSize, columnSize, elements);
+        return new HashCodeBuilder()
+                .append(rowSize)
+                .append(columnSize)
+                .append(elements)
+                .hashCode();
     }
 
     @Override

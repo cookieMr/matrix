@@ -6,6 +6,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -173,6 +178,33 @@ class MatrixTest {
 
         assertThat(matrix.get(0, 0)).isEqualTo(constant);
         assertThat(matrix.get(1, 1)).isEqualTo(4 * constant);
+    }
+
+    @Test
+    void equalsContractForAllMatrixImplementation() {
+        int[] primitiveIntegers = IntStream.range(1, 10).toArray();
+        List<Integer> boxedIntegers = IntStream.range(1, 10)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Collection<Matrix> matrices = Arrays.asList(
+                new SingleThreadMatrix(3, 3, primitiveIntegers),
+                new SingleThreadMatrix(3, 3, boxedIntegers),
+                new CommonPoolMatrix(3, 3, primitiveIntegers),
+                new CommonPoolMatrix(3, 3, boxedIntegers)
+        );
+
+        for (Matrix matrix : matrices) {
+            assertThat(matrices)
+                    .allMatch(m -> m.hashCode() == matrix.hashCode())
+                    .allMatch(matrix::equals);
+        }
+
+        int expectedDeterminant = 0;
+        assertThat(matrices)
+                .extracting(Matrix::getDeterminant)
+                .hasSize(matrices.size())
+                .containsOnly(expectedDeterminant);
     }
 
 }
