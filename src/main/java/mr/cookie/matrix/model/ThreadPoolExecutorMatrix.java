@@ -1,11 +1,11 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.model.utils.CallableMultiplyRowTask;
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -95,8 +95,8 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
-        List<MultiplyRowTask> tasks = IntStream.range(0, rowSize)
-                .mapToObj(i -> new MultiplyRowTask(i, m1, m2))
+        List<CallableMultiplyRowTask> tasks = IntStream.range(0, rowSize)
+                .mapToObj(i -> new CallableMultiplyRowTask(i, m1, m2))
                 .collect(Collectors.toList());
         List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
 
@@ -110,46 +110,6 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
         numbers.toArray(new Integer[rowSize * rowSize]);
 
         return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
-    }
-
-    /**
-     * A private class calculating a single row for the resulting matrix. It multiplies
-     * a specified row from the 1st {@link Matrix} with the whole 2nd {@link Matrix}.
-     */
-    private static class MultiplyRowTask implements Callable<List<Integer>> {
-
-        private final int rowIndex;
-        private final Matrix m1;
-        private final Matrix m2;
-
-        /**
-         * @param rowIndex index of the row to be multiplied
-         * @param m1       source matrix of the row
-         * @param m2       a matrix which will be used to multiply the row
-         */
-        public MultiplyRowTask(int rowIndex, @NotNull Matrix m1, @NotNull Matrix m2) {
-            this.rowIndex = rowIndex;
-            this.m1 = m1;
-            this.m2 = m2;
-        }
-
-        @Override
-        public List<Integer> call() {
-            int rowSize = m1.getRowSize();
-
-            List<Integer> resultingRow = new ArrayList<>();
-            List<Integer> row = m1.getRow(rowIndex);
-
-            for (int c = 0; c < rowSize; c++) {
-                List<Integer> column = m2.getColumn(c);
-
-                resultingRow.add(IntStream.range(0, row.size())
-                        .map(i -> row.get(i) * column.get(i))
-                        .sum());
-            }
-
-            return resultingRow;
-        }
     }
 
 }
