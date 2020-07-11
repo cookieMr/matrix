@@ -196,7 +196,9 @@ class MatrixTest {
                 new CommonPoolMatrix(3, 3, primitiveIntegers),
                 new CommonPoolMatrix(3, 3, boxedIntegers),
                 new ThreadPoolExecutorMatrix(3, 3, primitiveIntegers),
-                new ThreadPoolExecutorMatrix(3, 3, boxedIntegers)
+                new ThreadPoolExecutorMatrix(3, 3, boxedIntegers),
+                new CountDownLatchMatrix(3, 3, primitiveIntegers),
+                new CountDownLatchMatrix(3, 3, boxedIntegers)
         );
 
         for (Matrix matrix : matrices) {
@@ -218,6 +220,8 @@ class MatrixTest {
         matrices.add(CommonPoolMatrix.random());
         Random.setSeed(seed);
         matrices.add(ThreadPoolExecutorMatrix.random());
+        Random.setSeed(seed);
+        matrices.add(CountDownLatchMatrix.random());
 
         for (Matrix matrix : matrices) {
             assertThat(matrices)
