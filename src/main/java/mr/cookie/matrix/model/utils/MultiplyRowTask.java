@@ -28,6 +28,11 @@ public abstract class MultiplyRowTask {
         this.m2 = m2;
     }
 
+    /**
+     * Returns a calculated row of multiplication.
+     *
+     * @return a calculated row of multiplication
+     */
     protected @NotNull List<Integer> calculate() {
         int rowSize = m1.getRowSize();
 

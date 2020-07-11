@@ -7,8 +7,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * A {@link Callable} class calculating a single row for the resulting matrix. It multiplies
- * a specified row from the 1st {@link Matrix} with the whole 2nd {@link Matrix}.
+ * A class implementing {@link Callable} interface to calculate a single row for the resulting
+ * matrix. It multiplies a specified row from the 1st {@link Matrix} with the whole 2nd
+ * {@link Matrix}.
  */
 public final class CallableMultiplyRowTask extends MultiplyRowTask implements Callable<List<Integer>> {
 

@@ -10,6 +10,10 @@ import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * An implementation of an abstract {@link Matrix} class, where during matrices multiplication
+ * a {@link CountDownLatch} is used to control when all worker threads finished.
+ */
 public final class CountDownLatchMatrix extends Matrix {
 
     /**
@@ -37,6 +41,16 @@ public final class CountDownLatchMatrix extends Matrix {
         return random(1 + Random.nextInt(MAX_ALLOWED_SIZE), 1 + Random.nextInt(MAX_ALLOWED_SIZE));
     }
 
+    /**
+     * Returns a new matrix that is a product of multiplying two input matrices. An input matrix
+     * needs to have the same row count as the other matrix has column count (and vice versa).
+     * If not then {@link IllegalArgumentException} will be thrown.
+     *
+     * @param m1 first matrix that will be used during multiplication
+     * @param m2 second matrix that will be used during multiplication
+     * @return a new matrix that is a product of multiplying two matrices
+     * @throws InterruptedException if something goes wrong with multithreading
+     */
     public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) throws InterruptedException {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
