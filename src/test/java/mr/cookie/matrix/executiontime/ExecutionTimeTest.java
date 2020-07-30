@@ -21,6 +21,8 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThatCode;
+
 class ExecutionTimeTest {
 
     private static final BiFunction<Matrix, Matrix, Matrix> COMMON_POOL_MATRIX_MULTIPLY = CommonPoolMatrix::multiply;
@@ -123,7 +125,7 @@ class ExecutionTimeTest {
         Matrix.setExecutor(executorService);
         Matrix.setSemaphorePermits(permits);
 
-        function.apply(M1, M2);
+        assertThatCode(() -> function.apply(M1, M2)).doesNotThrowAnyException();
         executorService.shutdown();
     }
 

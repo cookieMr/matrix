@@ -1,5 +1,6 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.exceptions.MatrixInterruptedException;
 import mr.cookie.matrix.model.utils.RunnableLatchMultiplyRowTask;
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
@@ -66,7 +67,8 @@ public final class CountDownLatchMatrix extends Matrix {
         try {
             latch.await();
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            throw new MatrixInterruptedException(e);
         }
 
         List<Integer> numbers = rowTasks.stream()
