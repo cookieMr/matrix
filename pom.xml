@@ -6,13 +6,13 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.0-M1</version>
+        <version>2.3.2.RELEASE</version>
         <relativePath/>
     </parent>
 
     <groupId>mr.cookie</groupId>
     <artifactId>matrix</artifactId>
-    <version>0.2-beta</version>
+    <version>0.3-beta</version>
 
     <name>Matrix</name>
     <description>Matrix Multiplication</description>
@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>17.0.0</version>
+            <version>19.0.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -60,8 +60,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
                     <release>11</release>
-                    <source>11</source>
-                    <target>11</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>

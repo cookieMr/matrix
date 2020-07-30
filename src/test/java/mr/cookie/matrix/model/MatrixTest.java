@@ -5,17 +5,21 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MatrixTest {
@@ -24,6 +28,59 @@ class MatrixTest {
 
     private static @NotNull Stream<Integer> invalidRowAndColumnSizes() {
         return Stream.of(-100, -1, 0);
+    }
+
+    private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+
+    public static @NotNull Stream<ExecutorService> executorServices() {
+        return Stream.of(
+                Executors.newFixedThreadPool(THREAD_POOL_SIZE),
+                Executors.newFixedThreadPool(50),
+                Executors.newFixedThreadPool(100),
+                Executors.newCachedThreadPool(),
+                Executors.newScheduledThreadPool(THREAD_POOL_SIZE),
+                Executors.newScheduledThreadPool(50),
+                Executors.newScheduledThreadPool(100),
+                Executors.newWorkStealingPool(),
+                Executors.newSingleThreadExecutor()
+        );
+    }
+
+    public static @NotNull Stream<Integer> exponentSizes() {
+        return Stream.of(1, 10, 100, 1_000);
+    }
+
+    public static @NotNull Stream<Arguments> mixedExecutorsAndSizes() {
+        List<ExecutorService> executorServices = executorServices().collect(Collectors.toList());
+        List<Integer> sizes = Arrays.asList(1, 10, 100);
+
+        return executorServices.stream()
+                .map(executor -> sizes.stream()
+                        .map(size -> Arguments.of(executor, size))
+                        .collect(Collectors.toList()))
+                .flatMap(Collection::stream);
+    }
+
+    private static @NotNull Stream<Integer> disallowedPermits() {
+        return Stream.of(Integer.MIN_VALUE, -100, -1, 0);
+    }
+
+    @ParameterizedTest
+    @MethodSource("disallowedPermits")
+    void throwsIfPermitsNumberIsLessThanOne(int permits) {
+        assertThatThrownBy(() -> Matrix.setSemaphorePermits(permits))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Count of permits for semaphore must be a positive number.");
+    }
+
+    private static @NotNull Stream<Integer> allowedPermits() {
+        return Stream.of(1, 10, 100, Integer.MAX_VALUE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("allowedPermits")
+    void doesNotThrowIfPermitsNumberIsGreaterThanZero(int permits) {
+        assertThatCode(() -> Matrix.setSemaphorePermits(permits)).doesNotThrowAnyException();
     }
 
     @Test
@@ -198,7 +255,9 @@ class MatrixTest {
                 new ThreadPoolExecutorMatrix(3, 3, primitiveIntegers),
                 new ThreadPoolExecutorMatrix(3, 3, boxedIntegers),
                 new CountDownLatchMatrix(3, 3, primitiveIntegers),
-                new CountDownLatchMatrix(3, 3, boxedIntegers)
+                new CountDownLatchMatrix(3, 3, boxedIntegers),
+                new SemaphoreMatrix(3, 3, primitiveIntegers),
+                new SemaphoreMatrix(3, 3, boxedIntegers)
         );
 
         for (Matrix matrix : matrices) {
@@ -222,6 +281,31 @@ class MatrixTest {
         matrices.add(ThreadPoolExecutorMatrix.random());
         Random.setSeed(seed);
         matrices.add(CountDownLatchMatrix.random());
+        Random.setSeed(seed);
+        matrices.add(SemaphoreMatrix.random());
+
+        for (Matrix matrix : matrices) {
+            assertThat(matrices)
+                    .allMatch(m -> m.hashCode() == matrix.hashCode())
+                    .allMatch(matrix::equals);
+        }
+    }
+
+    @Test
+    void equalsAndHashcodeContractsForRandomWithSizeMatrices() {
+        long seed = System.currentTimeMillis();
+        Collection<Matrix> matrices = new ArrayList<>();
+
+        Random.setSeed(seed);
+        matrices.add(SingleThreadMatrix.random(100, 100));
+        Random.setSeed(seed);
+        matrices.add(CommonPoolMatrix.random(100, 100));
+        Random.setSeed(seed);
+        matrices.add(ThreadPoolExecutorMatrix.random(100, 100));
+        Random.setSeed(seed);
+        matrices.add(CountDownLatchMatrix.random(100, 100));
+        Random.setSeed(seed);
+        matrices.add(SemaphoreMatrix.random(100, 100));
 
         for (Matrix matrix : matrices) {
             assertThat(matrices)

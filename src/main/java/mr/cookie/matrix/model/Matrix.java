@@ -10,6 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -19,8 +23,14 @@ import java.util.stream.Collectors;
  */
 public abstract class Matrix {
 
+    public static final AtomicReference<ExecutorService> EXECUTOR =
+            new AtomicReference<>(Executors.newFixedThreadPool(10));
+
+    public static final AtomicReference<Semaphore> SEMAPHORE =
+            new AtomicReference<>(new Semaphore(10, true));
+
     public static final int MAX_ALLOWED_SIZE = 1000;
-    public static final int MAX_ALLOWED_NUMBER = 100;
+    private static final int MAX_ALLOWED_NUMBER = 100;
 
     private final int[] elements;
     private final int rowSize;
@@ -71,6 +81,22 @@ public abstract class Matrix {
         this(rowSize, columnSize, elements.stream()
                 .mapToInt(Integer::intValue)
                 .toArray());
+    }
+
+    /**
+     * Sets a new executor to be used during matrices multiplication.
+     *
+     * @param executor a new executor to be used during matrices multiplication
+     */
+    public static void setExecutor(@NotNull ExecutorService executor) {
+        EXECUTOR.set(executor);
+    }
+
+    public static void setSemaphorePermits(int permits) {
+        if (permits < 1) {
+            throw new IllegalArgumentException("Count of permits for semaphore must be a positive number.");
+        }
+        SEMAPHORE.set(new Semaphore(permits, true));
     }
 
     /**
