@@ -6,6 +6,7 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +44,7 @@ class ThreadPoolExecutorMatrixTest {
     @ParameterizedTest
     @MethodSource("exponentSizes")
     void customThreadPoolMultiplyWithIncreasingSize(int size) {
+        Matrix.setExecutor(Executors.newWorkStealingPool());
         Matrix matrix = ThreadPoolExecutorMatrix.random(size, size);
         assertThatCode(() -> ThreadPoolExecutorMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
     }
@@ -58,8 +60,6 @@ class ThreadPoolExecutorMatrixTest {
 
         Matrix matrix = ThreadPoolExecutorMatrix.random(size, size);
         assertThatCode(() -> ThreadPoolExecutorMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
-
-        executor.shutdown();
     }
 
 }

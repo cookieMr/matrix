@@ -21,7 +21,7 @@ class SemaphoreMatrixTest {
 
     @ParameterizedTest
     @MethodSource("executorServices")
-    void customSemaphoreMultiply(@NotNull ExecutorService executor) throws ExecutionException, InterruptedException {
+    void customSemaphoreMultiply(@NotNull ExecutorService executor) {
         Matrix.setExecutor(executor);
 
         Matrix matrix1 = new SemaphoreMatrix(2, 3, 1, 0, 2, -1, 3, 1);
@@ -60,8 +60,6 @@ class SemaphoreMatrixTest {
 
         Matrix matrix = SemaphoreMatrix.random(size, size);
         assertThatCode(() -> SemaphoreMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
-
-        executor.shutdown();
     }
 
     private static @NotNull Stream<Integer> semaphorePermits() {

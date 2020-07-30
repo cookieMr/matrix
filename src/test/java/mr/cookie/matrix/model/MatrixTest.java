@@ -51,10 +51,9 @@ class MatrixTest {
     }
 
     public static @NotNull Stream<Arguments> mixedExecutorsAndSizes() {
-        List<ExecutorService> executorServices = executorServices().collect(Collectors.toList());
         List<Integer> sizes = Arrays.asList(1, 10, 100);
 
-        return executorServices.stream()
+        return executorServices()
                 .map(executor -> sizes.stream()
                         .map(size -> Arguments.of(executor, size))
                         .collect(Collectors.toList()))
