@@ -26,18 +26,13 @@ public final class CallableSemaphoreMultiplyRow extends MultiplyRowTask implemen
     }
 
     @Override
-    public @NotNull List<Integer> call() {
+    public @NotNull List<Integer> call() throws InterruptedException {
         try {
             semaphore.acquire();
             return calculate();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         } finally {
             semaphore.release();
         }
-
-        throw new IllegalStateException("Acquired permit from semaphore was interrupted. " +
-                "Cannot return a valid calculation result.");
     }
 
 }
