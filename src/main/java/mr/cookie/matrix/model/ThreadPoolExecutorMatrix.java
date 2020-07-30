@@ -1,5 +1,6 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.exceptions.MatrixInterruptedException;
 import mr.cookie.matrix.model.utils.CallableMultiplyRowTask;
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
@@ -95,7 +96,8 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
 
             return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            throw new MatrixInterruptedException(e);
         }
     }
 

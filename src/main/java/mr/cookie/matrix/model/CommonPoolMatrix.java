@@ -1,5 +1,6 @@
 package mr.cookie.matrix.model;
 
+import mr.cookie.matrix.exceptions.MatrixInterruptedException;
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 
@@ -90,7 +91,8 @@ public final class CommonPoolMatrix extends Matrix {
                 numbers.addAll(row.get());
             }
         } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            throw new MatrixInterruptedException(e);
         }
 
         //TODO: i am confused... because of this line tests for multiplication run 3.5s
