@@ -19,6 +19,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class MatrixTest {
@@ -58,6 +59,28 @@ class MatrixTest {
                         .map(size -> Arguments.of(executor, size))
                         .collect(Collectors.toList()))
                 .flatMap(Collection::stream);
+    }
+
+    private static @NotNull Stream<Integer> disallowedPermits() {
+        return Stream.of(Integer.MIN_VALUE, -100, -1, 0);
+    }
+
+    @ParameterizedTest
+    @MethodSource("disallowedPermits")
+    void throwsIfPermitsNumberIsLessThanOne(int permits) {
+        assertThatThrownBy(() -> Matrix.setSemaphorePermits(permits))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("Count of permits for semaphore must be a positive number.");
+    }
+
+    private static @NotNull Stream<Integer> allowedPermits() {
+        return Stream.of(1, 10, 100, Integer.MAX_VALUE);
+    }
+
+    @ParameterizedTest
+    @MethodSource("allowedPermits")
+    void doesNotThrowIfPermitsNumberIsGreaterThanZero(int permits) {
+        assertThatCode(() -> Matrix.setSemaphorePermits(permits)).doesNotThrowAnyException();
     }
 
     @Test
