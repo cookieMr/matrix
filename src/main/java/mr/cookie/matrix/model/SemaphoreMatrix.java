@@ -1,55 +1,31 @@
 package mr.cookie.matrix.model;
 
-import mr.cookie.matrix.model.utils.CallableMultiplyRowTask;
+import mr.cookie.matrix.model.utils.CallableSemaphoreMultiplyRow;
 import mr.cookie.matrix.random.Random;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-/**
- * An implementation of an abstract {@link Matrix} class with a configurable thread
- * pool of {@link ExecutorService} type. Multiplication of two matrices is spread
- * across available threads in a specified thread pool.
- *
- * @see Matrix
- */
-public final class ThreadPoolExecutorMatrix extends Matrix {
+public final class SemaphoreMatrix extends Matrix {
 
     /**
      * @see Matrix#Matrix(int, int, int...)
      */
-    public ThreadPoolExecutorMatrix(int rowSize, int columnSize, @NotNull int... elements) {
+    public SemaphoreMatrix(int rowSize, int columnSize, @NotNull int... elements) {
         super(rowSize, columnSize, elements);
     }
 
     /**
      * @see Matrix#Matrix(int, int, List)
      */
-    public ThreadPoolExecutorMatrix(int rowSize, int columnSize, @NotNull List<Integer> elements) {
+    public SemaphoreMatrix(int rowSize, int columnSize, @NotNull List<Integer> elements) {
         super(rowSize, columnSize, elements);
-    }
-
-    @Override
-    protected @NotNull ThreadPoolExecutorMatrix minorMatrix(int row, int column) {
-        int minorSize = getRowSize() - 1;
-        return new ThreadPoolExecutorMatrix(minorSize, minorSize, getMinorMatrixElements(row, column));
-    }
-
-    /**
-     * Returns a matrix with random row & column count and with random elements in it.<br/>
-     * Row count is between 1 and 1000 (same goes for column count).<br/>
-     * Elements value are between -100 and 100.
-     *
-     * @return a fully populated matrix
-     */
-    public static @NotNull ThreadPoolExecutorMatrix random() {
-        return random(1 + Random.nextInt(MAX_ALLOWED_SIZE), 1 + Random.nextInt(MAX_ALLOWED_SIZE));
     }
 
     /**
@@ -60,9 +36,26 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
      * @param columnCount a column count for a matrix
      * @return a fully populated matrix
      */
-    public static @NotNull ThreadPoolExecutorMatrix random(int rowCount, int columnCount) {
+    public static @NotNull SemaphoreMatrix random(int rowCount, int columnCount) {
         int[] numbers = getRandomElements(rowCount * columnCount);
-        return new ThreadPoolExecutorMatrix(rowCount, columnCount, numbers);
+        return new SemaphoreMatrix(rowCount, columnCount, numbers);
+    }
+
+    /**
+     * Returns a matrix with random row & column count and with random elements in it.<br/>
+     * Row count is between 1 and 1000 (same goes for column count).<br/>
+     * Elements value are between -100 and 100.
+     *
+     * @return a fully populated matrix
+     */
+    public static @NotNull SemaphoreMatrix random() {
+        return random(1 + Random.nextInt(MAX_ALLOWED_SIZE), 1 + Random.nextInt(MAX_ALLOWED_SIZE));
+    }
+
+    @Override
+    protected @NotNull SemaphoreMatrix minorMatrix(int row, int column) {
+        int minorSize = getRowSize() - 1;
+        return new SemaphoreMatrix(minorSize, minorSize, getMinorMatrixElements(row, column));
     }
 
     /**
@@ -81,8 +74,9 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
-        List<CallableMultiplyRowTask> tasks = IntStream.range(0, rowSize)
-                .mapToObj(i -> new CallableMultiplyRowTask(i, m1, m2))
+        Semaphore semaphore = SEMAPHORE.get();
+        List<CallableSemaphoreMultiplyRow> tasks = IntStream.range(0, rowSize)
+                .mapToObj(i -> new CallableSemaphoreMultiplyRow(i, m1, m2, semaphore))
                 .collect(Collectors.toList());
         List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
 
@@ -90,10 +84,6 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
         for (Future<List<Integer>> row : futures) {
             numbers.addAll(row.get());
         }
-
-        //TODO: i am confused... because of this line tests for multiplication run 18s
-        // without it tests run 26s... why??? optimization??? but how???
-        numbers.toArray(new Integer[rowSize * rowSize]);
 
         return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
     }

@@ -113,7 +113,7 @@ class SingleThreadMatrixTest {
     }
 
     private static @NotNull Stream<Integer> exponentSizes() {
-        return Stream.of(1, 10, 100, 1_000);
+        return MatrixTest.exponentSizes();
     }
 
     @ParameterizedTest
