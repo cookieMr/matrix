@@ -7,6 +7,7 @@ import mr.cookie.matrix.model.SemaphoreMatrix;
 import mr.cookie.matrix.model.SingleThreadMatrix;
 import mr.cookie.matrix.model.ThreadPoolExecutorMatrix;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -111,6 +112,7 @@ class ExecutionTimeTest {
                 .flatMap(Collection::stream);
     }
 
+    @Disabled("Very long, execution time measurement test, not for pipeline")
     @ParameterizedTest(name = "[{index}] {3}")
     @MethodSource("arguments")
     void matrixMultiplication(
