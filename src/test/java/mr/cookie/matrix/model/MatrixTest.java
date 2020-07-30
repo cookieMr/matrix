@@ -30,15 +30,15 @@ class MatrixTest {
         return Stream.of(-100, -1, 0);
     }
 
-    private static final int THREAD_POOL_SIZE = Runtime.getRuntime().availableProcessors();
+    private static final int CPU_COUNT = Runtime.getRuntime().availableProcessors();
 
     public static @NotNull Stream<ExecutorService> executorServices() {
         return Stream.of(
-                Executors.newFixedThreadPool(THREAD_POOL_SIZE),
+                Executors.newFixedThreadPool(CPU_COUNT),
                 Executors.newFixedThreadPool(50),
                 Executors.newFixedThreadPool(100),
                 Executors.newCachedThreadPool(),
-                Executors.newScheduledThreadPool(THREAD_POOL_SIZE),
+                Executors.newScheduledThreadPool(CPU_COUNT),
                 Executors.newScheduledThreadPool(50),
                 Executors.newScheduledThreadPool(100),
                 Executors.newWorkStealingPool(),
@@ -270,7 +270,7 @@ class MatrixTest {
 
     @Test
     void equalsAndHashcodeContractsForRandomMatrices() {
-        long seed = System.currentTimeMillis();
+        final long seed = Random.getSeed();
         Collection<Matrix> matrices = new ArrayList<>();
 
         Random.setSeed(seed);
@@ -293,7 +293,7 @@ class MatrixTest {
 
     @Test
     void equalsAndHashcodeContractsForRandomWithSizeMatrices() {
-        long seed = System.currentTimeMillis();
+        final long seed = Random.getSeed();
         Collection<Matrix> matrices = new ArrayList<>();
 
         Random.setSeed(seed);

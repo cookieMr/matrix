@@ -49,9 +49,8 @@ public final class CountDownLatchMatrix extends Matrix {
      * @param m1 first matrix that will be used during multiplication
      * @param m2 second matrix that will be used during multiplication
      * @return a new matrix that is a product of multiplying two matrices
-     * @throws InterruptedException if something goes wrong with multithreading
      */
-    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) throws InterruptedException {
+    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
@@ -64,7 +63,11 @@ public final class CountDownLatchMatrix extends Matrix {
         rowTasks.stream()
                 .map(Thread::new)
                 .forEach(Thread::start);
-        latch.await();
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         List<Integer> numbers = rowTasks.stream()
                 .map(RunnableLatchMultiplyRowTask::getOutputRow)

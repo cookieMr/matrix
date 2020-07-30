@@ -5,7 +5,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.stream.Stream;
 
@@ -20,7 +19,7 @@ class ThreadPoolExecutorMatrixTest {
 
     @ParameterizedTest
     @MethodSource("executorServices")
-    void customThreadPoolMultiply(@NotNull ExecutorService executor) throws ExecutionException, InterruptedException {
+    void customThreadPoolMultiply(@NotNull ExecutorService executor) {
         Matrix.setExecutor(executor);
 
         Matrix matrix1 = new ThreadPoolExecutorMatrix(2, 3, 1, 0, 2, -1, 3, 1);
@@ -33,6 +32,8 @@ class ThreadPoolExecutorMatrixTest {
         Matrix expected2 = new SingleThreadMatrix(3, 3, 2, 3, 7, 1, 3, 5, 1, 0, 2);
         Matrix result2 = ThreadPoolExecutorMatrix.multiply(matrix2, matrix1);
         assertThat(result2).isEqualTo(expected2);
+
+        executor.shutdown();
     }
 
     private static @NotNull Stream<Integer> exponentSizes() {
@@ -57,6 +58,8 @@ class ThreadPoolExecutorMatrixTest {
 
         Matrix matrix = ThreadPoolExecutorMatrix.random(size, size);
         assertThatCode(() -> ThreadPoolExecutorMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
+
+        executor.shutdown();
     }
 
 }

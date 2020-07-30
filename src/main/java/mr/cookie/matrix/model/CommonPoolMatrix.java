@@ -73,17 +73,8 @@ public final class CommonPoolMatrix extends Matrix {
      * @param m1 first matrix that will be used during multiplication
      * @param m2 second matrix that will be used during multiplication
      * @return a new matrix that is a product of multiplying two matrices
-     * @throws ExecutionException   in case something went wrong while getting result
-     *                              from a {@link Future#get()}, result of multiplication
-     *                              cannot be obtained, so it's up to the used of
-     *                              this method to handle such case
-     * @throws InterruptedException in case something went wrong while getting result
-     *                              from a {@link Future#get()}, result of multiplication
-     *                              cannot be obtained, so it's up to the used of
-     *                              this method to handle such case
      */
-    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2)
-            throws ExecutionException, InterruptedException {
+    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
@@ -94,8 +85,12 @@ public final class CommonPoolMatrix extends Matrix {
         }
 
         List<Integer> numbers = new ArrayList<>(rowSize * rowSize);
-        for (Future<List<Integer>> row : multipliedRows) {
-            numbers.addAll(row.get());
+        try {
+            for (Future<List<Integer>> row : multipliedRows) {
+                numbers.addAll(row.get());
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
 
         //TODO: i am confused... because of this line tests for multiplication run 3.5s

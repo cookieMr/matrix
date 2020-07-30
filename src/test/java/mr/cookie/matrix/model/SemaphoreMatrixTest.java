@@ -34,6 +34,8 @@ class SemaphoreMatrixTest {
         Matrix expected2 = new SingleThreadMatrix(3, 3, 2, 3, 7, 1, 3, 5, 1, 0, 2);
         Matrix result2 = SemaphoreMatrix.multiply(matrix2, matrix1);
         assertThat(result2).isEqualTo(expected2);
+
+        executor.shutdown();
     }
 
     private static @NotNull Stream<Integer> exponentSizes() {
@@ -58,6 +60,8 @@ class SemaphoreMatrixTest {
 
         Matrix matrix = SemaphoreMatrix.random(size, size);
         assertThatCode(() -> SemaphoreMatrix.multiply(matrix, matrix)).doesNotThrowAnyException();
+
+        executor.shutdown();
     }
 
     private static @NotNull Stream<Integer> semaphorePermits() {

@@ -66,11 +66,8 @@ public final class SemaphoreMatrix extends Matrix {
      * @param m1 first matrix that will be used during multiplication
      * @param m2 second matrix that will be used during multiplication
      * @return a new matrix that is a product of multiplying two matrices
-     * @throws InterruptedException if something goes wrong with multithreading
-     * @throws ExecutionException   if something goes wrong with multithreading
      */
-    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2)
-            throws InterruptedException, ExecutionException {
+    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
@@ -78,14 +75,17 @@ public final class SemaphoreMatrix extends Matrix {
         List<CallableSemaphoreMultiplyRow> tasks = IntStream.range(0, rowSize)
                 .mapToObj(i -> new CallableSemaphoreMultiplyRow(i, m1, m2, semaphore))
                 .collect(Collectors.toList());
-        List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
+        try {
+            List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
 
-        List<Integer> numbers = new ArrayList<>(rowSize * rowSize);
-        for (Future<List<Integer>> row : futures) {
-            numbers.addAll(row.get());
+            List<Integer> numbers = new ArrayList<>(rowSize * rowSize);
+            for (Future<List<Integer>> row : futures) {
+                numbers.addAll(row.get());
+            }
+            return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
-
-        return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
     }
 
 }

@@ -73,29 +73,30 @@ public final class ThreadPoolExecutorMatrix extends Matrix {
      * @param m1 first matrix that will be used during multiplication
      * @param m2 second matrix that will be used during multiplication
      * @return a new matrix that is a product of multiplying two matrices
-     * @throws InterruptedException if something goes wrong with multithreading
-     * @throws ExecutionException   if something goes wrong with multithreading
      */
-    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2)
-            throws InterruptedException, ExecutionException {
+    public static @NotNull Matrix multiply(@NotNull Matrix m1, @NotNull Matrix m2) {
         verifyRowAndColumnCountsForMultiplication(m1, m2);
 
         int rowSize = m1.getRowSize();
         List<CallableMultiplyRowTask> tasks = IntStream.range(0, rowSize)
                 .mapToObj(i -> new CallableMultiplyRowTask(i, m1, m2))
                 .collect(Collectors.toList());
-        List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
+        try {
+            List<Future<List<Integer>>> futures = EXECUTOR.get().invokeAll(tasks);
 
-        List<Integer> numbers = new ArrayList<>(rowSize * rowSize);
-        for (Future<List<Integer>> row : futures) {
-            numbers.addAll(row.get());
+            List<Integer> numbers = new ArrayList<>(rowSize * rowSize);
+            for (Future<List<Integer>> row : futures) {
+                numbers.addAll(row.get());
+            }
+
+            //TODO: i am confused... because of this line tests for multiplication run 18s
+            // without it tests run 26s... why??? optimization??? but how???
+            numbers.toArray(new Integer[rowSize * rowSize]);
+
+            return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
-
-        //TODO: i am confused... because of this line tests for multiplication run 18s
-        // without it tests run 26s... why??? optimization??? but how???
-        numbers.toArray(new Integer[rowSize * rowSize]);
-
-        return new ThreadPoolExecutorMatrix(rowSize, rowSize, numbers);
     }
 
 }
